@@ -1,0 +1,10 @@
+POVEZAVA Z BAZO (JT):
+Najprej sem ustvaril mvc aplikacijo(z osnovno mvc predlogo), ki sem jo najprej(po zgledu iz vaj) povezal z podatkovno bazo. Za povezavo sem naredil container v dockerju z najnovejšim imigom in določil geslo(MojGeslo123!).
+. V VS Code sem si naložil SQL Server extension(saj bo tako najbolj praktično, da boma imela bazo na istem mestu kot izvorno kodo). V aplikaciji sem pod appsettings dodal connectionString te povezave, v program.cs. Nato sem pričel z 
+kreacijo tabel v mapi Models. Tabele(modeli) so naslednje: Uporabnik(osnovni podatki, je_administrator, je_uporabnik), Dogodek(osnovni podatki o dogodku), Kategorija(pod katero kategorijo dogodek spada), Lokacija(latitude in longitude dogodka), 
+Udeležba(prikazuje kater uporabnik gre na kater dogodek, vsebuje tudi števec). Nato sem ustvaril mapo Data in v njej iFindContext, definiral tabele, in definiral kako bo izgledal zapis tabel v množini(npr. uporabnik -> uporabniki 
+, saj je privzeto v angleščini -> uporabniks). zaradi tega ker ima tabela Udeležba sestavljen PK, sem to tudi zapisal tukaj, da bo ob kreaciji baze to dejansko tako določilo. Za lažje upravljanje sem za dogodke, kategorije,
+in uporabnike kreiral tudi controllerje, za enostavnejšo implementacijo, ki jih boma po potrebi izbrisala ali dodala še kakšnega za drugo tabelo. Nato sem začel z migracijo. V prvi migraciji je EF Core za tabelo Udelezbe nastavil ON DELETE CASCADE 
+na obeh FK (do Uporabniki in Dogodki), kar je v SQL Serverju povzročilo napako zaradi več cikličnih cascade poti. Rešitev: v OnModelCreating sem ročno nastavil .OnDelete(DeleteBehavior.NoAction) na relaciji 
+Udelezba → Uporabnik, izbrisal staro bazo in mapo Migrations ter naredil čisto novo migracijo. Po tem baza deluje brez težav. Nato sem bazo (s pomočjo controllerjev, ki sem jih dodal) testiral; dodal sem novega uporabnika,
+ter nekaj osnovnih kategorij. Zdaj sledi nadaljevanje ustvarjanja aplikacije- registracija uporabnika- avtentikacija/avtorizacija in nato izdelava home paga. 
