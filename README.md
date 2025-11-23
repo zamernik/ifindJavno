@@ -11,4 +11,25 @@ Udelezba → Uporabnik, izbrisal staro bazo in mapo Migrations ter naredil čist
 ter nekaj osnovnih kategorij. Zdaj sledi nadaljevanje ustvarjanja aplikacije- registracija uporabnika- avtentikacija/avtorizacija in nato izdelava home paga. 
 
 
+PRIJAVA,REGISTRACIJA,CSS IN NEKKAJ MALENKOSTI(JZ):
+V /Views/Shared/_Layout.cshtml sem dodal dve novi povezavi do strani Prijava in do strani Registracija, pravtako sem nastavil asp-controllerja za te dve povezavi, ki sta povezana na določen pogled. V tem primeru je Registracija povezana na Uporabniki/create.cshtml.
+
+Ker bova uporabljala svoj lasten css, sem v folderju /wwwroot/css dodal datoteko: registracija.css, v katero sem napsial css za registracijo.
+
+V pogled /view/uporabniki/create.html sem vključil css datoteko z ukazom @section styles{...}, da to deluje, sem moral v glavno cshtml datoteko torej _Layout.cshtml v <head> vključiti     @RenderSection("Styles", required: false).
+
+Odstranil em, da lahko uporabnik sam določa datum in čas registracije, sej mi ni smiselno, naredil sem tako, da se vzame trenutni čas in trenutni datum. To sem dodal tudi v kontroler uporabnikiController. Ostalo nisem spreminjal v controllerjih.
+
+Popravil sm controller za uporabnika, saj sem moral dodati prijavo uporabnika,ki predhodno ni bila implementirana,saj je code generator sam po sebi ne ustvari, nato sme v poglede dodal pogled Prijava,da e uporabnik lahko prijavi.
+
+Nimava metode createdbifnotexists, glej video 3, cca 50. minuta in vstavljenih userjev cca 45mnuta.
+
+Preko Nugeta sem dodal Microsoft.AspNetCore.Identity.EntityFrameworkCore in izbral kar najnovejso verzijo tj. 10.0 in enake verzije 
+Microsoft.AspNetCore.Identity.EntityFrameworkCore.UI.
+
+P.S. Dodal sem velik komentarjev, da ti bo jasno kaj sem delal.
+
+
+
+
 
