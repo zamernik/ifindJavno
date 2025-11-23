@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Models;
@@ -28,17 +27,11 @@ namespace web.Controllers
         // GET: Uporabniki/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var uporabnik = await _context.Uporabnik
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (uporabnik == null)
-            {
-                return NotFound();
-            }
+            if (uporabnik == null) return NotFound();
 
             return View(uporabnik);
         }
@@ -50,14 +43,15 @@ namespace web.Controllers
         }
 
         // POST: Uporabniki/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Ime,Priimek,Spol,Mail,Geslo,DatumRegistracije,JeAdministrator,JeOrganizator")] Uporabnik uporabnik)
+        public async Task<IActionResult> Create([Bind("Id,Ime,Priimek,Spol,Mail,Geslo,JeAdministrator,JeOrganizator")] Uporabnik uporabnik)
         {
             if (ModelState.IsValid)
             {
+                // Nastavi trenutni datum ob registraciji
+                uporabnik.DatumRegistracije = DateTime.Now;
+
                 _context.Add(uporabnik);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -68,30 +62,20 @@ namespace web.Controllers
         // GET: Uporabniki/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var uporabnik = await _context.Uporabnik.FindAsync(id);
-            if (uporabnik == null)
-            {
-                return NotFound();
-            }
+            if (uporabnik == null) return NotFound();
+
             return View(uporabnik);
         }
 
         // POST: Uporabniki/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ime,Priimek,Spol,Mail,Geslo,DatumRegistracije,JeAdministrator,JeOrganizator")] Uporabnik uporabnik)
         {
-            if (id != uporabnik.Id)
-            {
-                return NotFound();
-            }
+            if (id != uporabnik.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,14 +86,8 @@ namespace web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UporabnikExists(uporabnik.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!UporabnikExists(uporabnik.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -119,17 +97,11 @@ namespace web.Controllers
         // GET: Uporabniki/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var uporabnik = await _context.Uporabnik
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (uporabnik == null)
-            {
-                return NotFound();
-            }
+            if (uporabnik == null) return NotFound();
 
             return View(uporabnik);
         }
@@ -143,15 +115,39 @@ namespace web.Controllers
             if (uporabnik != null)
             {
                 _context.Uporabnik.Remove(uporabnik);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        // Preveri, če uporabnik obstaja
         private bool UporabnikExists(int id)
         {
             return _context.Uporabnik.Any(e => e.Id == id);
+        }
+
+        // GET: Uporabniki/Prijava
+        public IActionResult Prijava()
+        {
+            return View(); // prikaz login forme
+        }
+
+        // POST: Uporabniki/Prijava
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Prijava(string email, string geslo)
+        {
+            var uporabnik = await _context.Uporabnik
+                .FirstOrDefaultAsync(u => u.Mail == email && u.Geslo == geslo);
+
+            if (uporabnik != null)
+            {
+                // Tukaj lahko nastaviš session/cookie za prijavljenega uporabnika
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Nepravilni email ali geslo");
+            return View();
         }
     }
 }

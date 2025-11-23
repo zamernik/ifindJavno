@@ -1,10 +1,13 @@
 using web.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 //tukaj definiram katere tabele bom uporabljal
 
 namespace web.Data
 {
-    public class iFindContext : DbContext
+
+    //Spremiti sem moral bivše dedovanje iz DbContext v IdentityDbContext<ApplicationUser>
+    public class iFindContext : IdentityDbContext<ApplicationUser>
     {
         public iFindContext(DbContextOptions<iFindContext> options) : base(options)
         {
@@ -19,6 +22,8 @@ namespace web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Uporabnik>().ToTable("Uporabniki"); //ker drugači privzeto po angleško- npr. Uporabniks
             modelBuilder.Entity<Dogodek>().ToTable("Dogodki");
             modelBuilder.Entity<Kategorija>().ToTable("Kategorije");

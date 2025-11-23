@@ -1,0 +1,121 @@
+/* Glavna vrstica z levim in desnim stolpcem */
+.row {
+    width: 70%;
+    align-items: stretch; 
+    gap: 5px; 
+    border-radius: 20px;
+    outline: 2px solid #871C87; 
+    margin: 50px auto; 
+    display: flex;  
+    background-color: #ffffff; 
+}
+
+
+
+.levi {
+    flex: 1;   
+    padding: 5%;
+        border-radius: 20px;
+
+    background: linear-gradient(to right , #b388eb, #ffffff);
+
+
+}
+
+.desni {
+    flex: 1;      
+    padding:5%;
+    background-color: #ffffff;
+}
+
+input {
+    padding: 5px; 
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-control {
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #871C87, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #871C87, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+    
+}
+
+
+
+.gumbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px; 
+}
+
+.gumb_nazaj, .gumb_registracija {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 10px;
+    background-color: white;
+    outline: 2px solid #871C87; 
+
+}
+
+.gumb_nazaj {
+    color: #000;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: 37%;
+}
+
+.gumb_nazaj:hover {
+    background-color: #b388eb;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: 37%;
+    box-shadow: 0 4px 6px #871C87;
+}
+.gumb_registracija {
+    color: #000;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: 60%;
+}
+
+.gumb_registracija:hover {
+     background-color: #b388eb;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: 60%;
+        box-shadow: 0 4px 6px #871C87;
+
+}

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\web\\web.csproj": {}
+    "C:\\Users\\zamer\\ifind\\iFind\\web\\web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\web\\web.csproj": {
+    "C:\\Users\\zamer\\ifind\\iFind\\web\\web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\web\\web.csproj",
+        "projectUniqueName": "C:\\Users\\zamer\\ifind\\iFind\\web\\web.csproj",
         "projectName": "web",
-        "projectPath": "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\web\\web.csproj",
-        "packagesPath": "C:\\Users\\jantu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\web\\obj\\",
+        "projectPath": "C:\\Users\\zamer\\ifind\\iFind\\web\\web.csproj",
+        "packagesPath": "C:\\Users\\zamer\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zamer\\ifind\\iFind\\web\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\jantu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\zamer\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -44,6 +44,14 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[10.0.0, )"

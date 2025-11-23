@@ -1,10 +1,13 @@
 html {
   font-size: 14px;
+  background-color: #F5F7F3;
 }
 
 @media (min-width: 768px) {
   html {
     font-size: 16px;
+      background-color: #F5F7F3;
+
   }
 }
 
@@ -15,10 +18,19 @@ html {
 html {
   position: relative;
   min-height: 100%;
+    background-color: #FFFFFF;
+
 }
 
 body {
   margin-bottom: 60px;
+    background-color: #FFFFFF;
+
+}
+
+footer{
+    background-color: #b388eb !important;
+
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +40,11 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+header, .navbar{
+  background-color: #b388eb !important;
+}
+
+footer{
+  height: 8%;
 }

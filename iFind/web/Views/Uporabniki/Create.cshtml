@@ -4,63 +4,66 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/registracija.css" asp-append-version="true" />
+}
 
-<h4>Uporabnik</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="levi">
+    <h1>Dobrodošli v iFind!</h1>
+    <p>Pridružite se naši skupnosti in: </p>
+    <ul>
+        <li>Objavite svoje dogodke in dosežite širšo publiko</li>
+        <li>Poiščite zanimive dogodke v svoji bližini ali kjerkoli po svetu</li>
+        <li>Ostanite obveščeni o prihajajočih priložnostih in aktivnostih</li>
+    </ul>
+    <p>Registracija je hitra in enostavna – ustvarite račun in začnite raziskovati dogodke že danes!</p>
+</div>
+
+
+    <div class="desni">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h2>Registracija</h2>
+
             <div class="form-group">
-                <label asp-for="Ime" class="control-label"></label>
-                <input asp-for="Ime" class="form-control" />
+                <input asp-for="Ime" class="form-control" placeholder="Ime" />
                 <span asp-validation-for="Ime" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Priimek" class="control-label"></label>
-                <input asp-for="Priimek" class="form-control" />
+                <input asp-for="Priimek" class="form-control" placeholder="Priimek" />
                 <span asp-validation-for="Priimek" class="text-danger"></span>
             </div>
+
+            
+
             <div class="form-group">
-                <label asp-for="Spol" class="control-label"></label>
-                <input asp-for="Spol" class="form-control" />
-                <span asp-validation-for="Spol" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Mail" class="control-label"></label>
-                <input asp-for="Mail" class="form-control" />
+                <input asp-for="Mail" class="form-control" placeholder="E-mail"/>
                 <span asp-validation-for="Mail" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Geslo" class="control-label"></label>
-                <input asp-for="Geslo" class="form-control" />
+                <input asp-for="Geslo" class="form-control" placeholder="Geslo"/>
                 <span asp-validation-for="Geslo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DatumRegistracije" class="control-label"></label>
-                <input asp-for="DatumRegistracije" class="form-control" />
-                <span asp-validation-for="DatumRegistracije" class="text-danger"></span>
+                <input asp-for="Spol" class="form-control" placeholder="Spol"/>
+                <span asp-validation-for="Spol" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="JeAdministrator" /> @Html.DisplayNameFor(model => model.JeAdministrator)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="JeOrganizator" /> @Html.DisplayNameFor(model => model.JeOrganizator)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <!-- kot sem napisal v readme, sem skril opcijo za določanje datuma registracije-->
+            <input asp-for="DatumRegistracije" type="hidden" value="@DateTime.Now" />
+
+            <div class="gumbi">
+                <a asp-controller="Home" asp-action="Index" class="gumb_nazaj">Nazaj</a>
+                <input type="submit" value="Registracija" class="gumb_registracija" />
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
