@@ -27,6 +27,12 @@ Nimava metode createdbifnotexists, glej video 3, cca 50. minuta in vstavljenih u
 Preko Nugeta sem dodal Microsoft.AspNetCore.Identity.EntityFrameworkCore in izbral kar najnovejso verzijo tj. 10.0 in enake verzije 
 Microsoft.AspNetCore.Identity.EntityFrameworkCore.UI.
 
+
+DODAJANJE ZEMLJEVIDA Z DELUJOČIMI PINNI(JT)
+Najprej sem si naložil git za lažje push/pullanje najinega projekta iz githuba. To je stvarilo nekaj novih filov znotraj projekta. Nato sem pričel z implementacijo zemljevida. Določil sem, da bo zemljevid kar na home strani, lahko pa se kasneje prestavi. 
+V Home Controllerju sem dodal metodo getEvents- ki bo pridobila podatke o dogodku, iz tabel dogodek, lokacija, kategorija. Zaenkrat še organizator ne more vpisovati dogodkov, zato sem dal notri testne podatke, da bom lahko vseeno preveril pravilnost izpisa na zemljevidu. 
+Potem sem začel z prikazom zemljevida na index.cshmtl, najprej sem mislil z implementacijo z APIjem GoogleMapsa, a sem ugottovil da je z leafletom. Na kratko- Prikaže zemljevid med footom in headerjev, ki sta narejena v layout.cshtml(zo mi je povzročalo kar nekaj težav), potem gre čez vse dogodke, ki se zdaj nahajajo v controllerju, jih glede na njihovo lat in lng doda na zemljevid, ob kliku nanj pa sproži pop-up z podatki o dogodku ter možnostjo udeležbe s klikom na gumb. Vse narejeno v js, dodal sem nekaj komentarjev za razumevanje. 
+
 P.S. Dodal sem velik komentarjev, da ti bo jasno kaj sem delal.
 
 
