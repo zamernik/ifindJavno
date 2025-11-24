@@ -1,7 +1,71 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Domov";
+    Layout = "~/Views/Shared/_Layout.cshtml";   //osnoven layot(head/footer)
 }
 
-<div class="text-center">
-    <h1 class="display-4">Dobrodošli</h1>
-</div>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Zemljevid zavzame ves ostal prostor med headerjem in footerjem, prej je izgledalo grdo -->
+<div id="map"></div>
+
+@section Styles {
+    <style>
+        html, body { height: 100%; margin: 0; }
+        #map { height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 1; }
+        header { position: relative; z-index: 10; }
+        footer { position: relative; z-index: 10; }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> <!-- link js za leaflet -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const map = L.map('map').setView([46.0569, 14.5058], 8); //nastavim na Slovenijo
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            fetch('/Home/GetEvents') //pridobi vse evente
+                .then(r => r.json())
+                .then(data => {
+                    data.forEach(e => {
+                        //nastavim in oblikujem elemente popupa ko kliknemo na pin
+                        const popupHtml = `
+                            <div style="font-family: Arial, sans-serif; min-width: 220px;">
+                                <h5 style="margin:0 0 6px 0; font-size:16px; color:#1a1a1a;">
+                                    ${e.Naziv || e.naziv}
+                                </h5>
+                                <div style="margin-bottom:4px; color:#0066cc; font-weight:bold;">
+                                    (${e.Kategorija || e.kategorija})
+                                </div>
+                                <div style="margin-bottom:8px; color:#444; font-size:14px;">
+                                    ${e.DatumCas || e.datumCas}
+                                </div>
+                                <div style="font-size:14px; line-height:1.4; color:#333;">
+                                    ${e.opis || e.Opis}
+                                </div>
+                                <div style="margin-top:12px; text-align:right;">
+                                    <button onclick="alert('Še ne narejeno :)')" 
+                                            style="background:#007bff; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">
+                                        Pridem!
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+
+                        L.marker([e.lat, e.lng])
+                            .addTo(map)
+                            .bindPopup(popupHtml, { 
+                                maxWidth: 300,
+                                autoPanPaddingTopLeft: [50, 100],   //brez tega so opisi nekaterih pinnov ob kliku bili preveč gor in se delno niso videli
+                                autoPanPaddingBottomRight: [50, 50]
+                            });
+                    });
+                })
+                .catch(err => console.error('Napaka:', err));
+        });
+    </script>
+}

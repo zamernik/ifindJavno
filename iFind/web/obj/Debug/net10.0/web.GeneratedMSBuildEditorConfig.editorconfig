@@ -19,105 +19,105 @@ build_property.TargetFrameworkIdentifier = .NETCoreApp
 build_property.TargetFrameworkVersion = v10.0
 build_property.RootNamespace = web
 build_property.RootNamespace = web
-build_property.ProjectDir = C:\Users\zamer\ifind\iFind\web\
+build_property.ProjectDir = C:\Users\jantu\Faks2Letnik\IS projekti\iFind\iFind\web\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\zamer\ifind\iFind\web
+build_property.MSBuildProjectDirectory = C:\Users\jantu\Faks2Letnik\IS projekti\iFind\iFind\web
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Dogodki/Create.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Dogodki/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9nb2RraVxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Dogodki/Delete.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Dogodki/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9nb2RraVxEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Dogodki/Details.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Dogodki/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9nb2RraVxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Dogodki/Edit.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Dogodki/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9nb2RraVxFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Dogodki/Index.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Dogodki/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9nb2RraVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Home/Index.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Home/Privacy.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Kategorije/Create.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Kategorije/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlqZVxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Kategorije/Delete.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Kategorije/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlqZVxEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Kategorije/Details.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Kategorije/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlqZVxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Kategorije/Edit.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Kategorije/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlqZVxFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Kategorije/Index.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Kategorije/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2F0ZWdvcmlqZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Shared/Error.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Uporabniki/Create.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Uporabniki/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXBvcmFibmlraVxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Uporabniki/Delete.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Uporabniki/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXBvcmFibmlraVxEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Uporabniki/Details.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Uporabniki/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXBvcmFibmlraVxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Uporabniki/Edit.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Uporabniki/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXBvcmFibmlraVxFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Uporabniki/Index.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Uporabniki/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXBvcmFibmlraVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Uporabniki/Prijava.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Uporabniki/Prijava.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXBvcmFibmlraVxQcmlqYXZhLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/_ViewImports.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/_ViewStart.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/zamer/ifind/iFind/web/Views/Shared/_Layout.cshtml]
+[C:/Users/jantu/Faks2Letnik/IS projekti/iFind/iFind/web/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-vpkz4e1jaw
