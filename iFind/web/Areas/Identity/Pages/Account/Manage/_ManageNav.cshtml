@@ -1,0 +1,42 @@
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/manage.css" asp-append-version="true" />
+}
+
+<ul class="sidebar-nav">
+    <li class="sidebar-item">
+        <a class="sidebar-link @ManageNavPages.IndexNavClass(ViewContext)" 
+           id="profile" asp-page="./Index">
+            Profil
+        </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a class="sidebar-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" 
+           id="change-password" asp-page="./ChangePassword">
+            Geslo
+        </a>
+    </li>
+
+    @if (hasExternalLogins)
+    {
+        <li id="external-logins" class="sidebar-item">
+            <a id="external-login"
+               class="sidebar-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)"
+               asp-page="./ExternalLogins">
+                Zunanje prijave
+            </a>
+        </li>
+    }
+
+    <li class="sidebar-item">
+        <a class="sidebar-link @ManageNavPages.PersonalDataNavClass(ViewContext)" 
+           id="personal-data" asp-page="./PersonalData">
+            Osebni podatki
+        </a>
+    </li>
+</ul>

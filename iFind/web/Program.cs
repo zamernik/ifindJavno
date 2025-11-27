@@ -1,20 +1,31 @@
 using web.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //alternativa temu kar je on naredil v startup.cs, ki tukaj ne obstaja več
-builder.Services.AddDbContext<iFindContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("PovezavaDoiFindBaze") + //iz jsona
-        ";TrustServerCertificate=True")); 
+//spremenil sem ime na stežniško verzijo
+var connectionString = builder.Configuration.GetConnectionString("PovezavaDoiFindBazeAzure");
 
+// Dodaj DbContext
+builder.Services.AddDbContext<iFindContext>(options =>
+    options.UseSqlServer(connectionString + ";TrustServerCertificate=True"));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages(); // dodano tukaj, pred builder.Build()
+
+// Dodaj Identity s svojim ApplicationUser in vloge
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // ne zahteva potrditve maila
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<iFindContext>();
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -27,6 +38,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -36,10 +48,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
-
-
-
-
+app.MapRazorPages(); // dodano tukaj, po UseAuthorization
 
 app.Run();

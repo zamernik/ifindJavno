@@ -1,0 +1,74 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Prijava";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/registracija.css" asp-append-version="true" />
+}
+
+<div class="row">
+    <!-- Levi stolpec: opis ali dobrodošlica -->
+    <div class="levi">
+        <h1>Dobrodošli nazaj v iFind!</h1>
+        <p>Prijavite se v svoj račun, da boste lahko: </p>
+        <ul>
+            <li>Ustvarjali in upravljali svoje dogodke</li>
+            <li>Ostali obveščeni o prihajajočih priložnostih</li>
+            <li>Odkrijte zanimive dogodke v svoji bližini ali po svetu</li>
+        </ul>
+    </div>
+
+    <!-- Desni stolpec: obrazec za prijavo -->
+    <div class="desni">
+        <form id="account" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h2>Prijava</h2>
+
+            <div class="form-group">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" placeholder="E-mail" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input asp-for="Input.Password" type="password" class="form-control" autocomplete="current-password" placeholder="Geslo" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check">
+                <input asp-for="Input.RememberMe" class="form-check-input" />
+                <label asp-for="Input.RememberMe" class="form-check-label">Zapomni si me</label>
+            </div>
+
+            <div class="gumbi">
+                <button type="submit" class="gumb_registracija">Prijava</button>
+            </div>
+
+            <div class="mt-3">
+                <p><a asp-page="./ForgotPassword">Ste pozabili geslo?</a></p>
+                <p><a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registrirajte se kot nov uporabnik</a></p>
+            </div>
+        </form>
+
+        <!-- Prijava preko drugih računov -->
+        @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+        {
+            <div class="mt-3">
+                <h3>Prijava preko drugih računov</h3>
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <button type="submit" class="btn btn-primary m-1" name="provider" value="@provider.Name">@provider.DisplayName</button>
+                    }
+                </form>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -22,6 +22,7 @@ namespace web.Models
 
         public virtual Lokacija Lokacija { get; set; }
 
+
         //števec udeležbe
         public virtual ICollection<Udelezba> Udelezbe { get; set; }
 
