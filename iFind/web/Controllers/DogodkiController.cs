@@ -65,7 +65,7 @@ namespace web.Controllers
                 if (string.IsNullOrEmpty(userIdClaim))
                     return Unauthorized("Niste prijavljeni!");
 
-                dogodek.OrganizatorId = int.Parse(userIdClaim);
+                dogodek.OrganizatorId = userIdClaim;
 
                 _context.Add(dogodek);
                 await _context.SaveChangesAsync();
