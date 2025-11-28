@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using web.Models;
 
 namespace web.Controllers
 {
+    [Authorize] // Zahteva prijavo za vse akcije (lahko omejiš samo na Create, če želiš)
     public class DogodkiController : Controller
     {
         private readonly iFindContext _context;
@@ -50,7 +53,7 @@ namespace web.Controllers
         public IActionResult Create()
         {
             ViewData["KategorijaId"] = new SelectList(_context.Kategorija, "Id", "Naziv");
-            ViewData["OrganizatorId"] = new SelectList(_context.Uporabnik, "Id", "Geslo");
+            // Odstranjeno ViewData["OrganizatorId"] - ni več potrebno, saj je avtomatsko
             return View();
         }
 
@@ -59,16 +62,41 @@ namespace web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Naziv,Opis,DatumCas,OrganizatorId,KategorijaId")] Dogodek dogodek)
+        public async Task<IActionResult> Create([Bind("Id,Naziv,Opis,DatumCas,KategorijaId")] Dogodek dogodek)
         {
             if (ModelState.IsValid)
             {
+                // AVTOMATSKO NASTAVI OrganizatorId na ID prijavljenega uporabnika
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdClaim))
+                {
+                    return Unauthorized("Niste prijavljeni!");
+                }
+                dogodek.OrganizatorId = int.Parse(userIdClaim); // Predpostavljam, da je ID int; če string, prilagodi
+
                 _context.Add(dogodek);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Shrani Dogodek, da dobi ID
+
+                // DODAJ: Ustvari Lokacijo, če sta lat/lng podani (iz hidden inputov v view-u)
+                var latStr = Request.Form["Lat"];
+                var lngStr = Request.Form["Lng"];
+                if (decimal.TryParse(latStr, out var lat) && decimal.TryParse(lngStr, out var lng) && lat != 0 && lng != 0)
+                {
+                    var lokacija = new Lokacija
+                    {
+                        DogodekId = dogodek.Id, // FK na novi Dogodek
+                        Latitude = (double)lat,
+                        Longitude = (double)lng
+                        // Dodaj druge lastnosti, npr. Naslov, če imaš polje v formi
+                    };
+                    _context.Add(lokacija);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["KategorijaId"] = new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
-            ViewData["OrganizatorId"] = new SelectList(_context.Uporabnik, "Id", "Geslo", dogodek.OrganizatorId);
+            // Odstranjeno ViewData["OrganizatorId"] - ni več potrebno
             return View(dogodek);
         }
 
@@ -106,6 +134,9 @@ namespace web.Controllers
             {
                 try
                 {
+                    // Opcijsko: Če želiš, da se OrganizatorId ne spremeni pri editu, ga lahko override-aš tukaj
+                    // dogodek.OrganizatorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                    
                     _context.Update(dogodek);
                     await _context.SaveChangesAsync();
                 }
