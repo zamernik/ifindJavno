@@ -1556,3 +1556,4 @@ C:\Users\zamer\ifind_latest\iFind\web\obj\Debug\net10.0\web.genruntimeconfig.cac
 C:\Users\zamer\ifind_latest\iFind\web\obj\Debug\net10.0\ref\web.dll
 C:\Users\zamer\ifind_latest\iFind\web\obj\Debug\net10.0\compressed\a6604j7zdl-{0}-5de3urqoli-5de3urqoli.gz
 C:\Users\zamer\ifind_latest\iFind\web\obj\Debug\net10.0\compressed\244emrzapo-{0}-94k8w1mebs-94k8w1mebs.gz
+C:\Users\jantu\Faks2Letnik\IS projekti\iFind\iFind\web\obj\Debug\net10.0\compressed\244emrzapo-{0}-94k8w1mebs-94k8w1mebs.gz
