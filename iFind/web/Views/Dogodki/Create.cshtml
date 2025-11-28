@@ -1,52 +1,113 @@
-@model web.Models.Dogodek
+@model web.Models.CreateDogodekViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Dodaj nov dogodek</h1>
 
-<h4>Dogodek</h4>
+<h4>Dogodek in lokacija</h4>
 <hr />
+
+<!-- Leaflet zemljevid nad formom -->
+<div id="map" style="height: 400px; width: 100%; margin-bottom: 20px;"></div>
+
+<!-- Izpis lat/lng pod zemljevidom -->
+<div id="coordinates" style="margin-bottom: 20px; font-weight: bold; color: #333;">
+    Izberite točko na zemljevidu za postavitev pina. Koordinate bodo prikazane tukaj.
+</div>
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Hidden inputi za binding lat/lng v ViewModel -->
+            <input type="hidden" asp-for="Lokacija.Lat" id="latInput" />
+            <input type="hidden" asp-for="Lokacija.Lng" id="lngInput" />
+
+            <!-- Polja za Dogodek -->
             <div class="form-group">
-                <label asp-for="Naziv" class="control-label"></label>
-                <input asp-for="Naziv" class="form-control" />
-                <span asp-validation-for="Naziv" class="text-danger"></span>
+                <label asp-for="Dogodek.Naziv" class="control-label"></label>
+                <input asp-for="Dogodek.Naziv" class="form-control" />
+                <span asp-validation-for="Dogodek.Naziv" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Opis" class="control-label"></label>
-                <input asp-for="Opis" class="form-control" />
-                <span asp-validation-for="Opis" class="text-danger"></span>
+                <label asp-for="Dogodek.Opis" class="control-label"></label>
+                <textarea asp-for="Dogodek.Opis" class="form-control"></textarea>
+                <span asp-validation-for="Dogodek.Opis" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DatumCas" class="control-label"></label>
-                <input asp-for="DatumCas" class="form-control" />
-                <span asp-validation-for="DatumCas" class="text-danger"></span>
-            </div>
-            <!-- ga mora pridobiti avtomatsko
-            <div class="form-group">
-                <label asp-for="OrganizatorId" class="control-label"></label>
-                <select asp-for="OrganizatorId" class ="form-control" asp-items="ViewBag.OrganizatorId"></select>
-            </div>-->
-            <div class="form-group">
-                <label asp-for="KategorijaId" class="control-label"></label>
-                <select asp-for="KategorijaId" class ="form-control" asp-items="ViewBag.KategorijaId"></select>
+                <label asp-for="Dogodek.DatumCas" class="control-label"></label>
+                <input asp-for="Dogodek.DatumCas" type="datetime-local" class="form-control" />
+                <span asp-validation-for="Dogodek.DatumCas" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="Dogodek.KategorijaId" class="control-label"></label>
+                <select asp-for="Dogodek.KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId"></select>
+                <span asp-validation-for="Dogodek.KategorijaId" class="text-danger"></span>
+            </div>
+
+            <!-- Polje za naslov lokacije (opcijsko, za boljšo UX) -->
+            <hr />
+            <h5>Lokacija dogodka</h5>
+            <div class="form-group">
+                <label asp-for="Lokacija.Naslov" class="control-label"></label>
+                <input asp-for="Lokacija.Naslov" class="form-control" placeholder="Npr. Stožice, Ljubljana" />
+                <span asp-validation-for="Lokacija.Naslov" class="text-danger"></span>
+                <small class="form-text text-muted">Koordinate bodo samodejno shranjene iz zemljevida.</small>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Dodaj dogodek" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Nazaj na seznam</a>
 </div>
+
+<!-- Leaflet CSS in JS iz CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Inicializacija zemljevida (centriran na Slovenijo/Ljubljano)
+        var map = L.map('map').setView([46.0512, 14.5051], 8); // [lat, lng], zoom level
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        var marker; // Za shranjevanje markera
+        
+        // Event listener za klik na zemljevid
+        map.on('click', function(e) {
+            var lat = e.latlng.lat.toFixed(4);
+            var lng = e.latlng.lng.toFixed(4);
+            
+            // Odstrani prejšnji marker, če obstaja
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            
+            // Dodaj nov marker
+            marker = L.marker([lat, lng]).addTo(map)
+                .bindPopup('Lokacija dogodka: ' + lat + ', ' + lng)
+                .openPopup();
+            
+            // Posodobi izpis pod zemljevidom
+            document.getElementById('coordinates').innerHTML = 
+                'Izbrane koordinate: Širina: ' + lat + ', Dolžina: ' + lng;
+            
+            // Posodobi hidden inpute za binding v formo
+            document.getElementById('latInput').value = lat;
+            document.getElementById('lngInput').value = lng;
+        });
+    </script>
 }
