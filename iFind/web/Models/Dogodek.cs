@@ -14,6 +14,7 @@ namespace web.Models
 
 
         //FKji
+        [ForeignKey("Organizator")]
         public string OrganizatorId { get; set; }
         public virtual Uporabnik Organizator { get; set; }
 
