@@ -74,7 +74,7 @@ namespace web.Controllers
                     {
                         return Unauthorized("Niste prijavljeni!");
                     }
-                    dogodek.OrganizatorId = int.Parse(userIdClaim); // Predpostavljam, da je ID int; če string, prilagodi
+                    dogodek.OrganizatorId = userIdClaim; // Predpostavljam, da je ID int; če string, prilagodi
 
                     _context.Add(dogodek);
                     await _context.SaveChangesAsync(); // Shrani Dogodek, da dobi ID
