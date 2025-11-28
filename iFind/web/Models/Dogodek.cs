@@ -15,8 +15,6 @@ namespace web.Models
 
         //FKji
         public int OrganizatorId { get; set; }
-        public virtual Uporabnik Organizator { get; set; }
-
         public int KategorijaId { get; set; }
         public virtual Kategorija Kategorija { get; set; }
 
