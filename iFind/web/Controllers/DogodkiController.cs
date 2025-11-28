@@ -64,39 +64,49 @@ namespace web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Naziv,Opis,DatumCas,KategorijaId")] Dogodek dogodek)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // AVTOMATSKO NASTAVI OrganizatorId na ID prijavljenega uporabnika
-                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(userIdClaim))
+                if (ModelState.IsValid)
                 {
-                    return Unauthorized("Niste prijavljeni!");
-                }
-                dogodek.OrganizatorId = int.Parse(userIdClaim); // Predpostavljam, da je ID int; če string, prilagodi
-
-                _context.Add(dogodek);
-                await _context.SaveChangesAsync(); // Shrani Dogodek, da dobi ID
-
-                // DODAJ: Ustvari Lokacijo, če sta lat/lng podani (iz hidden inputov v view-u)
-                var latStr = Request.Form["Lat"];
-                var lngStr = Request.Form["Lng"];
-                if (decimal.TryParse(latStr, out var lat) && decimal.TryParse(lngStr, out var lng) && lat != 0 && lng != 0)
-                {
-                    var lokacija = new Lokacija
+                    // AVTOMATSKO NASTAVI OrganizatorId na ID prijavljenega uporabnika
+                    var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (string.IsNullOrEmpty(userIdClaim))
                     {
-                        DogodekId = dogodek.Id, // FK na novi Dogodek
-                        Latitude = (double)lat,
-                        Longitude = (double)lng
-                        // Dodaj druge lastnosti, npr. Naslov, če imaš polje v formi
-                    };
-                    _context.Add(lokacija);
-                    await _context.SaveChangesAsync();
-                }
+                        return Unauthorized("Niste prijavljeni!");
+                    }
+                    dogodek.OrganizatorId = int.Parse(userIdClaim); // Predpostavljam, da je ID int; če string, prilagodi
 
-                return RedirectToAction(nameof(Index));
+                    _context.Add(dogodek);
+                    await _context.SaveChangesAsync(); // Shrani Dogodek, da dobi ID
+
+                    // DODAJ: Ustvari Lokacijo, če sta lat/lng podani (iz hidden inputov v view-u)
+                    var latStr = Request.Form["Lat"];
+                    var lngStr = Request.Form["Lng"];
+                    if (decimal.TryParse(latStr, out var lat) && decimal.TryParse(lngStr, out var lng) && lat != 0 && lng != 0)
+                    {
+                        var lokacija = new Lokacija
+                        {
+                            DogodekId = dogodek.Id, // FK na novi Dogodek
+                            Latitude = (double)lat,
+                            Longitude = (double)lng
+                            // Dodaj druge lastnosti, npr. Naslov, če imaš polje v formi
+                        };
+                        _context.Add(lokacija);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["KategorijaId"] = new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
+                // Odstranjeno ViewData["OrganizatorId"] - ni več potrebno
             }
-            ViewData["KategorijaId"] = new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
-            // Odstranjeno ViewData["OrganizatorId"] - ni več potrebno
+            catch (Exception ex)
+            {
+                // Debug: Izpiši v TempData (vidno v view-u z @TempData["Error"])
+                TempData["Error"] = ex.Message + " | " + ex.InnerException?.Message;
+                ViewData["KategorijaId"] = new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
+                return View(dogodek);
+            }
             return View(dogodek);
         }
 
