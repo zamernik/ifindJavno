@@ -37,5 +37,43 @@ Potem sem začel z prikazom zemljevida na index.cshmtl, najprej sem mislil z imp
 
 
 
+AUTENTIKACIJA, AZURE, GITHUB ... (JZ)
+Ustvaril sem razred ApplicationUser, saj bomo uporabljali Identity razširitev namesto lastne tabele uporabniki. Razredu ApplicationUser sem dodal nekaj atributov, kot so ime, priimek … (glej Models/ApplicationUser). Nato sem ustvaril novo migracijo z imenom ApplicationUser. Po tem sem izbrisal obstoječo podatkovno bazo in jo ponovno posodobil z ukazom database update, ki je ponovno izvedel migracije. S tem se je ustvarilo kar nekaj novih tabel, ki so posledica Identity implementacije.
+
+Prilagodil sem program.cs, da uporablja avtentikacijo in Razor pages, ter generiral potrebne poglede. S code generatorjem sem ustvaril nove strani, ki so sedaj vidne pod /web/Areas. Pri tem generiranju se je v zavihku /Views ustvaril tudi _LayoutPartial, ki deduje od Identity. Vsebuje dva gumba, ki prikazujeta podatke glede na to, ali je uporabnik prijavljen ali ne.
+
+Moral sem prilagoditi precej stvari v strani za registracijo. Dodal sem, da mora uporabnik vnesti ime, priimek in ostale potrebne podatke, da registracija deluje. Dodal sem vse atribute, ki jih mora uporabnik izpolniti, da se uspešno registrira. Vse skupaj sem testiral in deluje. Omogočena je napredna avtentikacija, torej močna gesla, dvojna avtentikacija, preverjanje sintaktičnih napak itd.
+
+V tabelo AspNetRoles sem dodal tri vloge: administrator, organizator in uporabnik. Na koncu sem novim stranem za registracijo in prijavo dodal še CSS.
+
+Prevedel sem ustvarjene strani za registracijo, prijavo in urejanje osebnih podatkov v slovenščino ter dodal, da se namesto »Hello email…« izpiše »Pozdravljen Ime…«.
+
+Pobrisal sem nekaj strani, ki sva jih dobila z Identity, saj jih trenutno ne potrebujeva, npr. dvojna avtentikacija in potrditev preko e-pošte.
+
+Napisal sem Manage.css, v katerem se hrani CSS za uporabniški profil, saj registracija.css ni ustrezal. Poleg tega sem prevedel vse strani, ki se tičejo urejanja uporabniškega profila.
+
+Na spletni strani Azure sem se prijavil preko študentskega e-maila in aktiviral Azure naročnino. V Azure sem ustvaril novo SQL podatkovno bazo z naslednjimi podatki:
+
+Resource group: ifind.gr
+
+Ime podatkovne baze: ifind-db
+
+Server name: ifind-db
+
+Lokacija: (Europe) Germany West
+
+Administrator: su-ifind
+
+Geslo: Mojegeslo123!
+
+Service tier: Basic (do 2 GB podatkov)
+
+V lokalno podatkovno bazo sem moral dodati novo povezavo s strežnikom ifind-database.database.windows.net. Aplikacijo sem povezal s spletnim strežnikom tako, da sem dodal nov connection string z zgornjimi podatki ter spremenil ime v program.cs. Z ukazom dotnet ef database update sem posodobil podatkovno bazo, tako da so se tabele ustvarile tudi na Azure. Nato sem pognal build in run aplikacije.
+
+Ustvaril sem tudi nov App Service v Azure, ki sem ga dodelil isti resource group kot podatkovno bazo, torej ifind.gr. Aplikacijo sem poimenoval ifind-si in nastavil strežnik na Germany West Central, enako kot za DB strežnik, ter uporabil Free plan.
+
+
+
+
 
 
