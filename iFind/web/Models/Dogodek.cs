@@ -1,7 +1,6 @@
 #nullable disable
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
+using System.ComponentModel.DataAnnotations;
 namespace web.Models
 {
     public class Dogodek
