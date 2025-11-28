@@ -1,6 +1,5 @@
 #nullable disable
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace web.Models
@@ -16,7 +15,6 @@ namespace web.Models
 
 
         //FKji
-        [ForeignKey("Organizator")]
         public string OrganizatorId { get; set; }
         public virtual Uporabnik Organizator { get; set; }
 
