@@ -1,30 +1,25 @@
-#nullable disable
-using System;
-using System.ComponentModel.DataAnnotations;
-namespace web.Models
+public class Dogodek
 {
-    public class Dogodek
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
+    public string Naziv { get; set; }
+    public string Opis { get; set; }
+    public DateTime DatumCas { get; set; }
 
-        [Required] public string Naziv { get; set; }
-        public string Opis { get; set; }
+    public string OrganizatorId { get; set; }
 
-        [Required] public DateTime DatumCas { get; set; }//datum+ura
+    public int KategorijaId { get; set; }
+    public Kategorija Kategorija { get; set; }
 
+    public Lokacija Lokacija { get; set; }
+}
 
-        //FKji
-        public string OrganizatorId { get; set; }
-        public virtual Uporabnik Organizator { get; set; }
-        public int KategorijaId { get; set; }
-        public virtual Kategorija Kategorija { get; set; }
+public class Lokacija
+{
+    public int Id { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public string Naslov { get; set; }
 
-        public virtual Lokacija Lokacija { get; set; }
-
-
-        //števec udeležbe
-        public virtual ICollection<Udelezba> Udelezbe { get; set; }
-
-        public int SteviloUdelezencev => Udelezbe?.Count ?? 0;
-    }
+    public int DogodekId { get; set; }
+    public Dogodek Dogodek { get; set; }
 }
