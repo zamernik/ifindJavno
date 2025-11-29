@@ -77,6 +77,26 @@ V tabeli dbo.Dogodki sem najprej odstranil obstoječi tuji ključ, ki je povezal
 Tabelo Udelezbe sem najprej izbrisal, da sem odstranil obstoječe tuje in primarne ključe, nato pa sem ustvaril novo tabelo z stolpci UporabnikId tipa NVARCHAR(450), ki je tuji ključ na AspNetUsers.Id, DogodekId tipa INT, ki je tuji ključ na Dogodki.Id, in DatumPrijave tipa DATETIME2 za beleženje časa prijave. Primarni ključ sem določil kot kombinacijo UporabnikId in DogodekId, da preprečim podvajanje prijav istega uporabnika na isti dogodek, sprememba pa zagotavlja skladnost s podatkovnim modelom ASP.NET Identity in omogoča učinkovito upravljanje prijav uporabnikov na dogodke.
 Najprej sem odpravil napako v modelu Dogodek, kjer sem popravil definicije lastnosti in odstranil morebitne nepravilnosti. Nato sem ponovno pognal dotnet build in dobil nova opozorila ter tri ključne napake. Te napake so se nanašale na Razor poglede, kjer je koda dostopala do lastnosti Geslo v modelu ApplicationUser, ki pa v resnici ne obstaja. Identificiral sem problematične datoteke (Delete.cshtml, Details.cshtml in Index.cshtml) ter razumel, da moram iz pogledov odstraniti prikaz lastnosti Geslo, ker ta ni del modela in je ne bi smel nikoli prikazovati. Ugotovil sem tudi, da so nekatera opozorila povezana z nullable tipi, vendar ta ne preprečujejo delovanja. Glavne napake zdaj izvirajo iz napačnih referenc na ApplicationUser.Geslo, ki jih bom popravil v naslednjem koraku.
 
+VNAŠANJE DOGODKA(JT):
+V navigacijsko vrstico na vrhu strani(views/shared/layout) sem dodal povezavo do dogodki controllerja, ki sem ga že predhodno naredi. Ker mora organizator ob vnosu dogodka zabeležiti tudi njegovo kategorijo, sem preko kontrolerja za kategorijo z opisi vnesel nekaj osnovnih kategorij. Organizator jih ima tako pri vnosu dogodka na izbiro, če ne ustreza nobeni kategoriji sem dodal drugo.  
+Izbrisal sem možnost vnosa organizatorId(saj je smiselno da tega sistem ob vnosu pridobi sam glede na prijavljenega uporabnika), ostalo sem pustil tako kot je bilo narejeno v controllerju(naziv, opis, čas, kategorija dogodka).
+Poleg tega pa mora organizator v tabelo vpisati tudi lokacijo dogodka. Problem je, ker lokacija nosi FK na Dogodek(1:1 povezava), zato je treba dogodek kreirati pred lokacijo(sprogramiram kasneje v controllerju).  
+Da je vnos lokacije uporabniško prijaznejši(ročno vpisovanje latitude in longitude ne bi bilo estetsko) sem se odločil da to rešim preko implementacije zemljevida, kjer organizator določi pin in se avtomatsko shrani lat in lng tega pina. Na zaslonu se trenutno lat in lng izpišeta, zgolj zaradi tega da preverjam če se vrednosti pravilno shranita v spremenljivko, kar lahko kasneje odstranima, saj je za uporabnika nepotrebno. Estetsko stran še ni lepo urejena, vpisovanje podatkov deluje.
+Zemljevid na kratko- implementiran podobno kot na glavni strani, ob kliku se pojavi pin, shranita se lat in lng(definirana kot hidden inputa za razliko od drugih), ob kliku drugam se prejšni pin izbriše, pojavi nov, vrednosti se posodobita.
+
+Nato sem začel z delom v Dogodek Controllerju. Osnovno strukturo sem pustil enako, dodal pa sem: User.findFirstValu- za pridobivanje id-ja uporabnika, sicer naj izpiše da ni prijavljen(kar niti ne bo potrebno glede na to da neprijavljeni ne bodo imeli dostopa). V dogodek torej shranimo ta id in druge pridobljene informacije iz forma, dogodek tako kreiramo. nato pridobimo še lat in lng, ki jo skupaj z id-jem dogodka shranimo v tabelo Lokacija. Vnos najverjetneje zaradi konflikta z identity(vnos dogodka je namreč pred tem deloval) tabelo trenurno ne deluje. Ostale funkcije, ki so namenjene administratorju(edit, delete...) sem pustil nespremenjene. 
+
+PRIDOBITEV in IZRIS DOGODKA(JT):
+V HomeControllerju že imama tabelo testEvents, a so podatki tukaj testni, da sem prej preverjal pravilen izris in izpis glavnega zemljevida. Home controllerju sem najprej dodal dosto do baze(ifind context). Pod že definirano metodo GetEvents sem v njih dodal tabele Dogodek, Kategorija, Lokacija. Dodal sem pogoj, da mora biti posamezen dogodek v pb imeti definirano lokacijo(ker sicer izris na zemljevidu ni mogoč), nato pa sem iz teh treh tabel z sql stavkom pridobil zahtevane vrednosti, ki se bodo vnesle v tabelo. 
+Za preverjanje sem connection string spremenil na lokalno bazo(na azure serverju ni vpisanih dogodkov), vpisal nek dogodek, mu dodal lokacijo in preveril izpis na zemljevidu, ki je bil pravilen. testni primere sem zakomentiral in jih dal na dno datoteke, če bodo še uporabljeni. 
+
+GIT, GITHUB(JT):
+V projekt sem dodal .gitignore, da ne boma pull/pushalla nepotrebnih datotek v najinem repositoryu- lepša urejenost. Gizhub repository sma imela že narejen, vmes sma ga ob javni objavi aplikacije duplicirala in spremenila. Git z potrebnimi mapami(clear, git, main) sem ustvaril že predhodno ob začetku projekta. Ob spremembi repositorya je bila potrebna sprememba lokacije za push in pull.  Vaje6- pull request in branchanje!
+
+
+
+ 
+
 
 
 
