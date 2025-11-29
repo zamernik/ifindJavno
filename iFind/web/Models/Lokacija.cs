@@ -1,4 +1,3 @@
-#nullable disable
 using System.ComponentModel.DataAnnotations;
 
 namespace web.Models
@@ -7,16 +6,15 @@ namespace web.Models
     {
         public int Id { get; set; }
 
-        [Required] 
+        [Required]
         public double Latitude { get; set; }
 
-        [Required] 
+        [Required]
         public double Longitude { get; set; }
 
-        public string Naslov { get; set; }
+        public string? Naslov { get; set; }
 
-        // 1:1 z Dogodek
         public int DogodekId { get; set; }
-        public Dogodek Dogodek { get; set; }
+        public Dogodek Dogodek { get; set; } = null!;
     }
 }

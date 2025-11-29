@@ -1,18 +1,17 @@
-/* začasno zakomentirano
-#nullable disable
 using System;
-
+#nullable disable
 namespace web.Models
 {
     public class Udelezba
     {
-        public int UporabnikId { get; set; }
-        public Uporabnik Uporabnik { get; set; }
+        // Identity uporabnik → string Id
+        public string UporabnikId { get; set; } = null!;
+        public ApplicationUser Uporabnik { get; set; } = null!;
 
         public int DogodekId { get; set; }
-        public Dogodek Dogodek { get; set; }
+        public Dogodek Dogodek { get; set; } = null!;
 
         public DateTime DatumPrijave { get; set; } = DateTime.UtcNow;
     }
-}*/
+}
 

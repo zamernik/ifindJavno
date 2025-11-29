@@ -16,34 +16,50 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-6">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <strong>Napaka pri vnosu:</strong>
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+        }
 
-            <input type="hidden" id="Lat" name="Lat" />
-            <input type="hidden" id="Lng" name="Lng" />
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
-            <div class="form-group">
-                <label asp-for="Naziv"></label>
+            <input type="hidden" id="Lat" name="Lat" value="" />
+            <input type="hidden" id="Lng" name="Lng" value="" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Naziv" class="control-label"></label>
                 <input asp-for="Naziv" class="form-control" />
                 <span asp-validation-for="Naziv" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Opis"></label>
-                <input asp-for="Opis" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Opis" class="control-label"></label>
+                <textarea asp-for="Opis" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Opis" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DatumCas"></label>
-                <input asp-for="DatumCas" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="DatumCas" class="control-label"></label>
+                <input asp-for="DatumCas" class="form-control" type="datetime-local" />
                 <span asp-validation-for="DatumCas" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="KategorijaId"></label>
-                <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId"></select>
-            </div>
 
-            <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="form-group mb-3">
+                <label asp-for="KategorijaId" class="control-label"></label>
+                <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId">
+                    <option value="">-- Izberi kategorijo --</option>
+                </select>
+                <span asp-validation-for="KategorijaId" class="text-danger"></span>
+            </div>
+            
+
+            <button type="submit" class="btn btn-success btn-lg">Dodaj dogodek</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Prekliči</a>
         </form>
     </div>
 </div>
@@ -51,29 +67,26 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script>
         var map = L.map('map').setView([46.0512, 14.5051], 8);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-            .addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        var marker;
+        var marker = null;
 
-        map.on('click', function(e) {
-            var lat = e.latlng.lat.toFixed(6);
-            var lng = e.latlng.lng.toFixed(6);
+        map.on('click', function (e) {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
 
-            if (marker) map.removeLayer(marker);
-
+            if (marker) marker.remove();
             marker = L.marker([lat, lng]).addTo(map);
 
             document.getElementById('Lat').value = lat;
             document.getElementById('Lng').value = lng;
 
             document.getElementById('coordinates').innerHTML =
-                "Izbrane koordinate: " + lat + ", " + lng;
+                `<span style="color:green;font-weight:bold;">✓ Izbrane koordinate: ${lat}, ${lng}</span>`;
         });
     </script>
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace web.Migrations
 {
     /// <inheritdoc />
-    public partial class ApplicationUser : Migration
+    public partial class InitialCreateFixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,6 @@ namespace web.Migrations
                     Ime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Priimek = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Spol = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DatumRojstva = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -52,6 +51,20 @@ namespace web.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Kategorije",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Naziv = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Opis = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kategorije", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,8 +113,8 @@ namespace web.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -145,8 +158,8 @@ namespace web.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -156,6 +169,81 @@ namespace web.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dogodki",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Naziv = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Opis = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DatumCas = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrganizatorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    KategorijaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dogodki", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dogodki_AspNetUsers_OrganizatorId",
+                        column: x => x.OrganizatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dogodki_Kategorije_KategorijaId",
+                        column: x => x.KategorijaId,
+                        principalTable: "Kategorije",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Lokacije",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
+                    Naslov = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DogodekId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lokacije", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Lokacije_Dogodki_DogodekId",
+                        column: x => x.DogodekId,
+                        principalTable: "Dogodki",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Udelezbe",
+                columns: table => new
+                {
+                    UporabnikId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DogodekId = table.Column<int>(type: "int", nullable: false),
+                    DatumPrijave = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Udelezbe", x => new { x.UporabnikId, x.DogodekId });
+                    table.ForeignKey(
+                        name: "FK_Udelezbe_AspNetUsers_UporabnikId",
+                        column: x => x.UporabnikId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Udelezbe_Dogodki_DogodekId",
+                        column: x => x.DogodekId,
+                        principalTable: "Dogodki",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -198,6 +286,27 @@ namespace web.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dogodki_KategorijaId",
+                table: "Dogodki",
+                column: "KategorijaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dogodki_OrganizatorId",
+                table: "Dogodki",
+                column: "OrganizatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lokacije_DogodekId",
+                table: "Lokacije",
+                column: "DogodekId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Udelezbe_DogodekId",
+                table: "Udelezbe",
+                column: "DogodekId");
         }
 
         /// <inheritdoc />
@@ -219,10 +328,22 @@ namespace web.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Lokacije");
+
+            migrationBuilder.DropTable(
+                name: "Udelezbe");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Dogodki");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Kategorije");
         }
     }
 }

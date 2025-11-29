@@ -12,8 +12,8 @@ using web.Data;
 namespace web.Migrations
 {
     [DbContext(typeof(iFindContext))]
-    [Migration("20251124193438_ApplicationUser")]
-    partial class ApplicationUser
+    [Migration("20251129191924_InitialCreateFixed")]
+    partial class InitialCreateFixed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,10 +105,12 @@ namespace web.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -145,10 +147,12 @@ namespace web.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -169,9 +173,6 @@ namespace web.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DatumRojstva")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -259,8 +260,9 @@ namespace web.Migrations
                     b.Property<string>("Opis")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizatorId")
-                        .HasColumnType("int");
+                    b.Property<string>("OrganizatorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -321,8 +323,8 @@ namespace web.Migrations
 
             modelBuilder.Entity("web.Models.Udelezba", b =>
                 {
-                    b.Property<int>("UporabnikId")
-                        .HasColumnType("int");
+                    b.Property<string>("UporabnikId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("DogodekId")
                         .HasColumnType("int");
@@ -335,47 +337,6 @@ namespace web.Migrations
                     b.HasIndex("DogodekId");
 
                     b.ToTable("Udelezbe", (string)null);
-                });
-
-            modelBuilder.Entity("web.Models.Uporabnik", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DatumRegistracije")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Geslo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Ime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("JeAdministrator")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("JeOrganizator")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Mail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Priimek")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Spol")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Uporabniki", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -437,7 +398,7 @@ namespace web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("web.Models.Uporabnik", "Organizator")
+                    b.HasOne("web.Models.ApplicationUser", "Organizator")
                         .WithMany("OrganiziraniDogodki")
                         .HasForeignKey("OrganizatorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -467,7 +428,7 @@ namespace web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("web.Models.Uporabnik", "Uporabnik")
+                    b.HasOne("web.Models.ApplicationUser", "Uporabnik")
                         .WithMany("Udelezbe")
                         .HasForeignKey("UporabnikId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -476,6 +437,13 @@ namespace web.Migrations
                     b.Navigation("Dogodek");
 
                     b.Navigation("Uporabnik");
+                });
+
+            modelBuilder.Entity("web.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("OrganiziraniDogodki");
+
+                    b.Navigation("Udelezbe");
                 });
 
             modelBuilder.Entity("web.Models.Dogodek", b =>
@@ -488,13 +456,6 @@ namespace web.Migrations
             modelBuilder.Entity("web.Models.Kategorija", b =>
                 {
                     b.Navigation("Dogodki");
-                });
-
-            modelBuilder.Entity("web.Models.Uporabnik", b =>
-                {
-                    b.Navigation("OrganiziraniDogodki");
-
-                    b.Navigation("Udelezbe");
                 });
 #pragma warning restore 612, 618
         }

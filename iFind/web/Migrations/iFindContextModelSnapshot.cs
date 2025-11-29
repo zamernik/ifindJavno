@@ -257,8 +257,9 @@ namespace web.Migrations
                     b.Property<string>("Opis")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizatorId")
-                        .HasColumnType("int");
+                    b.Property<string>("OrganizatorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -319,8 +320,8 @@ namespace web.Migrations
 
             modelBuilder.Entity("web.Models.Udelezba", b =>
                 {
-                    b.Property<int>("UporabnikId")
-                        .HasColumnType("int");
+                    b.Property<string>("UporabnikId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("DogodekId")
                         .HasColumnType("int");
@@ -333,47 +334,6 @@ namespace web.Migrations
                     b.HasIndex("DogodekId");
 
                     b.ToTable("Udelezbe", (string)null);
-                });
-
-            modelBuilder.Entity("web.Models.Uporabnik", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DatumRegistracije")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Geslo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Ime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("JeAdministrator")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("JeOrganizator")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Mail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Priimek")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Spol")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Uporabniki", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -435,7 +395,7 @@ namespace web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("web.Models.Uporabnik", "Organizator")
+                    b.HasOne("web.Models.ApplicationUser", "Organizator")
                         .WithMany("OrganiziraniDogodki")
                         .HasForeignKey("OrganizatorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,7 +425,7 @@ namespace web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("web.Models.Uporabnik", "Uporabnik")
+                    b.HasOne("web.Models.ApplicationUser", "Uporabnik")
                         .WithMany("Udelezbe")
                         .HasForeignKey("UporabnikId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -474,6 +434,13 @@ namespace web.Migrations
                     b.Navigation("Dogodek");
 
                     b.Navigation("Uporabnik");
+                });
+
+            modelBuilder.Entity("web.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("OrganiziraniDogodki");
+
+                    b.Navigation("Udelezbe");
                 });
 
             modelBuilder.Entity("web.Models.Dogodek", b =>
@@ -486,13 +453,6 @@ namespace web.Migrations
             modelBuilder.Entity("web.Models.Kategorija", b =>
                 {
                     b.Navigation("Dogodki");
-                });
-
-            modelBuilder.Entity("web.Models.Uporabnik", b =>
-                {
-                    b.Navigation("OrganiziraniDogodki");
-
-                    b.Navigation("Udelezbe");
                 });
 #pragma warning restore 612, 618
         }

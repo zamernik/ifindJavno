@@ -51,49 +51,45 @@ namespace web.Controllers
         // GET: Dogodki/Create
         public IActionResult Create()
         {
-            ViewData["KategorijaId"] = new SelectList(_context.Kategorija, "Id", "Naziv");
+            ViewBag.KategorijaId = new SelectList(_context.Kategorija.ToList(), "Id", "Naziv");
             return View();
         }
 
         // POST: Dogodki/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Naziv,Opis,DatumCas,KategorijaId")] Dogodek dogodek)
+        public async Task<IActionResult> Create(Dogodek dogodek, string Lat, string Lng)
         {
+            ModelState.Remove("OrganizatorId");
+            ModelState.Remove("Organizator");
+
+            //!!!!
+            ViewBag.KategorijaId = new SelectList(_context.Kategorija.ToList(), "Id", "Naziv", dogodek.KategorijaId);
+
             if (!ModelState.IsValid)
             {
-                ViewData["KategorijaId"] =
-                    new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
                 return View(dogodek);
             }
 
-            // Preberi prijavljenega uporabnika
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized("Niste prijavljeni!");
+                return Unauthorized();
 
             dogodek.OrganizatorId = userId;
 
-            // 1) Shranimo Dogodek
             _context.Dogodek.Add(dogodek);
             await _context.SaveChangesAsync();
 
-            // 2) Lokacija iz hidden inputov
-            var latStr = Request.Form["Lat"];
-            var lngStr = Request.Form["Lng"];
-
-            if (double.TryParse(latStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double lat) &&
-                double.TryParse(lngStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double lng))
+            if (!string.IsNullOrEmpty(Lat) && !string.IsNullOrEmpty(Lng) &&
+                double.TryParse(Lat, NumberStyles.Any, CultureInfo.InvariantCulture, out double lat) &&
+                double.TryParse(Lng, NumberStyles.Any, CultureInfo.InvariantCulture, out double lng))
             {
-                var lokacija = new Lokacija
+                _context.Lokacija.Add(new Lokacija
                 {
                     DogodekId = dogodek.Id,
                     Latitude = lat,
-                    Longitude = lng,
-                    Naslov = null
-                };
-
-                _context.Lokacija.Add(lokacija);
+                    Longitude = lng
+                });
                 await _context.SaveChangesAsync();
             }
 
