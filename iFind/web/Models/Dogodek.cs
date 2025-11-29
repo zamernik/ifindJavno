@@ -20,6 +20,6 @@ namespace web.Models
         public Lokacija Lokacija { get; set; }
 
         // 1:N - en dogodek ima več udeležb
-        public ICollection<Udelezba> Udelezbe { get; set; } = new List<Udelezba>();
+       // public ICollection<Udelezba> Udelezbe { get; set; } = new List<Udelezba>(); začasno zakomentiram
     }
 }
