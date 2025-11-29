@@ -1,7 +1,7 @@
 using web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using web.Areas.Identity.Data;
+using web.Data;
 
 namespace web.Data
 {
