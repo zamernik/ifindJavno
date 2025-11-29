@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Models;
+using System.Globalization;
 
 namespace web.Controllers
 {
@@ -24,10 +25,10 @@ namespace web.Controllers
         // GET: Dogodki
         public async Task<IActionResult> Index()
         {
-            var iFindContext = _context.Dogodek
-                .Include(d => d.Kategorija);   // Organizator odstranjeno
+            var dogodki = _context.Dogodek
+                .Include(d => d.Kategorija);
 
-            return View(await iFindContext.ToListAsync());
+            return View(await dogodki.ToListAsync());
         }
 
         // GET: Dogodki/Details/5
@@ -37,7 +38,8 @@ namespace web.Controllers
                 return NotFound();
 
             var dogodek = await _context.Dogodek
-                .Include(d => d.Kategorija)   // Organizator odstranjeno
+                .Include(d => d.Kategorija)
+                .Include(d => d.Lokacija)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (dogodek == null)
@@ -56,45 +58,46 @@ namespace web.Controllers
         // POST: Dogodki/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Naziv,Opis,DatumCas,KategorijaId")] Dogodek dogodek)
+        public async Task<IActionResult> Create([Bind("Naziv,Opis,DatumCas,KategorijaId")] Dogodek dogodek)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                if (string.IsNullOrEmpty(userIdClaim))
-                    return Unauthorized("Niste prijavljeni!");
-
-                dogodek.OrganizatorId = userIdClaim;
-
-                _context.Add(dogodek);
-                await _context.SaveChangesAsync();
-
-                var latStr = Request.Form["Lat"];
-                var lngStr = Request.Form["Lng"];
-
-                if (decimal.TryParse(latStr, out var lat) &&
-                    decimal.TryParse(lngStr, out var lng) &&
-                    lat != 0 && lng != 0)
-                {
-                    var lokacija = new Lokacija
-                    {
-                        DogodekId = dogodek.Id,
-                        Latitude = (double)lat,
-                        Longitude = (double)lng
-                    };
-
-                    _context.Add(lokacija);
-                    await _context.SaveChangesAsync();
-                }
-
-                return RedirectToAction(nameof(Index));
+                ViewData["KategorijaId"] =
+                    new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
+                return View(dogodek);
             }
 
-            ViewData["KategorijaId"] =
-                new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
+            // Preberi prijavljenega uporabnika
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Niste prijavljeni!");
 
-            return View(dogodek);
+            dogodek.OrganizatorId = userId;
+
+            // 1) Shranimo Dogodek
+            _context.Dogodek.Add(dogodek);
+            await _context.SaveChangesAsync();
+
+            // 2) Lokacija iz hidden inputov
+            var latStr = Request.Form["Lat"];
+            var lngStr = Request.Form["Lng"];
+
+            if (double.TryParse(latStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double lat) &&
+                double.TryParse(lngStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double lng))
+            {
+                var lokacija = new Lokacija
+                {
+                    DogodekId = dogodek.Id,
+                    Latitude = lat,
+                    Longitude = lng,
+                    Naslov = null
+                };
+
+                _context.Lokacija.Add(lokacija);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Dogodki/Edit/5
@@ -121,28 +124,28 @@ namespace web.Controllers
             if (id != dogodek.Id)
                 return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(dogodek);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DogodekExists(dogodek.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
+                ViewData["KategorijaId"] =
+                    new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
 
-                return RedirectToAction(nameof(Index));
+                return View(dogodek);
             }
 
-            ViewData["KategorijaId"] =
-                new SelectList(_context.Kategorija, "Id", "Naziv", dogodek.KategorijaId);
+            try
+            {
+                _context.Update(dogodek);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Dogodek.Any(e => e.Id == dogodek.Id))
+                    return NotFound();
+                else
+                    throw;
+            }
 
-            return View(dogodek);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Dogodki/Delete/5
@@ -152,7 +155,7 @@ namespace web.Controllers
                 return NotFound();
 
             var dogodek = await _context.Dogodek
-                .Include(d => d.Kategorija) // Organizator odstranjeno
+                .Include(d => d.Kategorija)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (dogodek == null)
@@ -172,11 +175,6 @@ namespace web.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool DogodekExists(int id)
-        {
-            return _context.Dogodek.Any(e => e.Id == id);
         }
     }
 }
