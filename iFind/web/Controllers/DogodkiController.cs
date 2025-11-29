@@ -99,7 +99,7 @@ namespace web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
+        /* začasno izbrišem
         // GET: Dogodki/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -175,6 +175,6 @@ namespace web.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
+        }*/
     }
 }
