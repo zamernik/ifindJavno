@@ -1,3 +1,5 @@
+namespace web.Models
+{
 public class Dogodek
 {
     public int Id { get; set; }
@@ -22,4 +24,5 @@ public class Lokacija
 
     public int DogodekId { get; set; }
     public Dogodek Dogodek { get; set; }
+}
 }
