@@ -1,3 +1,4 @@
+/* začasno zakomentirano
 #nullable disable
 using System;
 
@@ -14,3 +15,4 @@ namespace web.Models
         public DateTime DatumPrijave { get; set; } = DateTime.UtcNow;
     }
 }
+
