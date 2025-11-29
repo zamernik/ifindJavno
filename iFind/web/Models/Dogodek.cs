@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using web.Areas.Identity.Data;
+using web.Models;
 
 namespace web.Models
 {
