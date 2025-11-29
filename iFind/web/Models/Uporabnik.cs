@@ -37,6 +37,6 @@ namespace web.Models
 
         //povezave
         public virtual ICollection<Dogodek> OrganiziraniDogodki { get; set; }
-        public virtual ICollection<Udelezba> Udelezbe { get; set; }
+        //public virtual ICollection<Udelezba> Udelezbe { get; set; } začasno
     }
 }
