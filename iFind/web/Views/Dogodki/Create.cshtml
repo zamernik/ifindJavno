@@ -6,12 +6,10 @@
 
 <h1>Tukaj dodaš dogodek:</h1>
 
-<!-- Leaflet zemljevid nad formom -->
 <div id="map" style="height: 400px; width: 100%; margin-bottom: 20px;"></div>
 
-<!-- Izpis lat/lng pod zemljevidom -->
 <div id="coordinates" style="margin-bottom: 20px; font-weight: bold; color: #333;">
-    Izberite točko na zemljevidu za postavitev pina. Koordinate bodo prikazane tukaj.
+    Izberite točko na zemljevidu za postavitev pina.
 </div>
 
 <hr />
@@ -19,88 +17,61 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <!-- Hidden inputi za shranjevanje lat/lng (binding v controllerju prek Request.Form["Lat"] in ["Lng"]) -->
-            <input type="hidden" id="Lat" name="Lat" value="" />
-            <input type="hidden" id="Lng" name="Lng" value="" />
 
-            <!-- HIDDEN za OrganizatorId - ni viden, ampak bindingan (lahko ga odstraniš, če nastaviš samo v controllerju) -->
-            <input type="hidden" asp-for="OrganizatorId" value="" />
-            
+            <input type="hidden" id="Lat" name="Lat" />
+            <input type="hidden" id="Lng" name="Lng" />
+
             <div class="form-group">
-                <label asp-for="Naziv" class="control-label"></label>
+                <label asp-for="Naziv"></label>
                 <input asp-for="Naziv" class="form-control" />
                 <span asp-validation-for="Naziv" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Opis" class="control-label"></label>
+                <label asp-for="Opis"></label>
                 <input asp-for="Opis" class="form-control" />
                 <span asp-validation-for="Opis" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DatumCas" class="control-label"></label>
+                <label asp-for="DatumCas"></label>
                 <input asp-for="DatumCas" class="form-control" />
                 <span asp-validation-for="DatumCas" class="text-danger"></span>
             </div>
-            <!--
             <div class="form-group">
-                <label asp-for="OrganizatorId" class="control-label"></label>
-                <select asp-for="OrganizatorId" class ="form-control" asp-items="ViewBag.OrganizatorId"></select>
-            </div> nepotreben--> 
-            <div class="form-group">
-                <label asp-for="KategorijaId" class="control-label"></label>
-                <select asp-for="KategorijaId" class ="form-control" asp-items="ViewBag.KategorijaId"></select>
+                <label asp-for="KategorijaId"></label>
+                <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId"></select>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
+            <input type="submit" value="Create" class="btn btn-primary" />
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-<!-- Leaflet CSS in JS iz CDN -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+
     <script>
-        // Inicializacija zemljevida (centriran na Slovenijo/Ljubljano)
-        var map = L.map('map').setView([46.0512, 14.5051], 8); // [lat, lng], zoom level
+        var map = L.map('map').setView([46.0512, 14.5051], 8);
         
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        
-        var marker; // Za shranjevanje markera
-        
-        // Event listener za klik na zemljevid
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+            .addTo(map);
+
+        var marker;
+
         map.on('click', function(e) {
-            var lat = e.latlng.lat.toFixed(4);
-            var lng = e.latlng.lng.toFixed(4);
-            
-            // Odstrani prejšnji marker, če obstaja
-            if (marker) {
-                map.removeLayer(marker);
-            }
-            
-            // Dodaj nov marker
-            marker = L.marker([lat, lng]).addTo(map)
-                .bindPopup('Lokacija dogodka: ' + lat + ', ' + lng)
-                .openPopup();
-            
-            // Posodobi izpis pod zemljevidom
-            document.getElementById('coordinates').innerHTML = 
-                'Izbrane koordinate: Širina: ' + lat + ', Dolžina: ' + lng;
-            
-            // Posodobi hidden inpute za shranjevanje (v controllerju jih bereš prek Request.Form)
+            var lat = e.latlng.lat.toFixed(6);
+            var lng = e.latlng.lng.toFixed(6);
+
+            if (marker) map.removeLayer(marker);
+
+            marker = L.marker([lat, lng]).addTo(map);
+
             document.getElementById('Lat').value = lat;
             document.getElementById('Lng').value = lng;
+
+            document.getElementById('coordinates').innerHTML =
+                "Izbrane koordinate: " + lat + ", " + lng;
         });
     </script>
 }
