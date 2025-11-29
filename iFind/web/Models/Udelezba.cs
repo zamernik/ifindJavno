@@ -14,5 +14,5 @@ namespace web.Models
 
         public DateTime DatumPrijave { get; set; } = DateTime.UtcNow;
     }
-}
+}*/
 
