@@ -1,54 +1,65 @@
 using web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-//tukaj definiram katere tabele bom uporabljal
+using web.Areas.Identity.Data;
 
 namespace web.Data
 {
-
-    //Spremiti sem moral bivše dedovanje iz DbContext v IdentityDbContext<ApplicationUser>
     public class iFindContext : IdentityDbContext<ApplicationUser>
     {
         public iFindContext(DbContextOptions<iFindContext> options) : base(options)
         {
-            
         }
-        public DbSet<Uporabnik> Uporabnik {get; set;}
-        public DbSet<Dogodek> Dogodek {get; set;}
-        public DbSet<Kategorija> Kategorija {get; set;}
-        public DbSet<Lokacija> Lokacija {get; set;}
-        public DbSet<Udelezba> Udelezba {get; set;}
-         
+
+        public DbSet<Uporabnik> Uporabnik { get; set; }
+        public DbSet<Dogodek> Dogodek { get; set; }
+        public DbSet<Kategorija> Kategorija { get; set; }
+        public DbSet<Lokacija> Lokacija { get; set; }
+        public DbSet<Udelezba> Udelezba { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Uporabnik>().ToTable("Uporabniki"); //ker drugači privzeto po angleško- npr. Uporabniks
+            // tabela imena
+            modelBuilder.Entity<Uporabnik>().ToTable("Uporabniki");
             modelBuilder.Entity<Dogodek>().ToTable("Dogodki");
             modelBuilder.Entity<Kategorija>().ToTable("Kategorije");
             modelBuilder.Entity<Lokacija>().ToTable("Lokacije");
             modelBuilder.Entity<Udelezba>().ToTable("Udelezbe");
 
-            //da bo ob kreaciji baze naredilo sestavljen PK pri tabeli Udeležba
+            // ===========================
+            // UDELEZBA: Composite key
+            // ===========================
             modelBuilder.Entity<Udelezba>()
                 .HasKey(u => new { u.UporabnikId, u.DogodekId });
 
-
-
-            // zaradi problema s CASCADE pri database update
+            // ===========================
+            // RELACIJE UDELEZBA ↔ UPORABNIK (1:N)
+            // ===========================
             modelBuilder.Entity<Udelezba>()
                 .HasOne(u => u.Uporabnik)
                 .WithMany(u => u.Udelezbe)
                 .HasForeignKey(u => u.UporabnikId)
-                .OnDelete(DeleteBehavior.NoAction);   // brez cascade tukaj
+                .OnDelete(DeleteBehavior.NoAction);
 
+            // ===========================
+            // RELACIJE UDELEZBA ↔ DOGODEK (1:N)
+            // ===========================
             modelBuilder.Entity<Udelezba>()
                 .HasOne(u => u.Dogodek)
                 .WithMany(d => d.Udelezbe)
                 .HasForeignKey(u => u.DogodekId)
-                .OnDelete(DeleteBehavior.Cascade);   // ostane cascade (briše udeležbe ob brisanju dogodka)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // ===========================
+            // RELACIJA DOGODEK ↔ LOKACIJA (1:1)
+            // ===========================
+            modelBuilder.Entity<Lokacija>()
+                .HasOne(l => l.Dogodek)
+                .WithOne(d => d.Lokacija)
+                .HasForeignKey<Lokacija>(l => l.DogodekId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
