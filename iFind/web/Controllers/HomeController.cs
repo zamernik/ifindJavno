@@ -2,12 +2,19 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using web.Models;
 using web.Data;
+using Microsoft.EntityFrameworkCore;//za dostop do baze
 
 namespace web.Controllers;
 
 public class HomeController : Controller
 {
-    
+    private readonly iFindContext _context; //dostop do baze
+
+    public HomeController(iFindContext context) 
+    {
+        _context = context;
+    }
+
     public IActionResult Index()
     {
         return View();
@@ -25,7 +32,28 @@ public class HomeController : Controller
     }
     //za zemljevid
     [HttpGet]
-    public IActionResult GetEvents()
+    public async Task<IActionResult> GetEvents()
+    {
+        var events = await _context.Dogodek
+            .Include(d => d.Kategorija) //Za Kategorija.Naziv
+            .Include(d => d.Lokacija)   //Za lat/lng
+            .Where(d => d.Lokacija != null)//pini se drugače ne morjo izrisali
+            .Select(d => new
+            {
+                Naziv = d.Naziv,
+                lat = d.Lokacija.Latitude, 
+                lng = d.Lokacija.Longitude,
+                DatumCas = d.DatumCas.ToString("dd.MM.yyyy HH:mm"),
+                Kategorija = d.Kategorija.Naziv, 
+                opis = d.Opis
+            })
+            .ToListAsync();
+
+        return Json(events); 
+    }
+}
+/* 
+public IActionResult GetEvents()
     {
         // ==== TESTNI PODATKI!!!
         var testEvents = new[]
@@ -36,7 +64,6 @@ public class HomeController : Controller
             new { Naziv = "Kino v Kopru", lat = 45.5481m, lng = 13.7302m, DatumCas = "11.09.2026 21:00", Kategorija = "kultura", opis = "Večerna projekcija novega filma na prostem ob koprski plaži" }
 
         };
-
-        return Json(testEvents);
+        return Json(events);
     }
-}
+*/

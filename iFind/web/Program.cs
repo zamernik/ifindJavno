@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //alternativa temu kar je on naredil v startup.cs, ki tukaj ne obstaja več
 //spremenil sem ime na stežniško verzijo
-var connectionString = builder.Configuration.GetConnectionString("PovezavaDoiFindBazeAzure");
+var connectionString = builder.Configuration.GetConnectionString("PovezavaDoiFindBaze"); //LOKALNO: PovezavaDoiFindBaze //SERVER: PovezavaDoiFindBazeAzure
 
 // Dodaj DbContext
 builder.Services.AddDbContext<iFindContext>(options =>
