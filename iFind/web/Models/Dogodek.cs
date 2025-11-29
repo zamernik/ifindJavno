@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using web.Areas.Identity.Data;
 
 namespace web.Models
 {
@@ -10,10 +12,14 @@ namespace web.Models
         public DateTime DatumCas { get; set; }
 
         public string OrganizatorId { get; set; }
+        public ApplicationUser Organizator { get; set; }
 
         public int KategorijaId { get; set; }
         public Kategorija Kategorija { get; set; }
 
         public Lokacija Lokacija { get; set; }
+
+        // 1:N - en dogodek ima več udeležb
+        public ICollection<Udelezba> Udelezbe { get; set; } = new List<Udelezba>();
     }
 }
