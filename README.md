@@ -1,3 +1,15 @@
+Člana ekipe:
+63240336 Jan Tuhtar
+63240357 Jan Zamernik
+
+Iskanje dogodkov na internetu je lahko zamudno, poleg tega pa vsi dogodki niso oglaševani na spletnih straneh ali plakatnih panojih. Z informacijskim sistemom iFind želimo ta problem rešiti tako, da bi omogočili enostavno objavljanje in iskanje dogodkov na interaktivnem zemljevidu.
+
+Organizatorji bi imeli brezplačen dostop do aplikacije, kjer bi po prijavi lahko dodajali nove dogodke z opisom, lokacijo, datumom in kategorijo (npr. koncert, šport, delavnica). 
+
+Uporabniki bi lahko na zemljevidu hitro našli vse dogodke, ki jih zanimajo in lahko potrdili udeležbo.
+
+
+Najino delo:
 POVEZAVA Z BAZO (JT):
 Najprej sem ustvaril mvc aplikacijo(z osnovno mvc predlogo), ki sem jo najprej(po zgledu iz vaj) povezal z podatkovno bazo. Za povezavo sem naredil container v dockerju z najnovejšim imigom in določil geslo(MojGeslo123!).
 
