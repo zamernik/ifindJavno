@@ -45,9 +45,9 @@
 
             <div class="form-group mb-4">
                 <label asp-for="Kategorija" class="control-label"></label>
-                <select asp-for="Kategorija" class="form-control" asp-items="ViewBag.KategorijaId">
-                    <option value="">-- Izberi kategorijo --</option>
-                </select>
+                <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId">
+    <option value="">-- Izberi kategorijo --</option>
+</select>
                 <span asp-validation-for="KategorijaId" class="text-danger"></span>
             </div>
 
