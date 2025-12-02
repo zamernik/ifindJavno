@@ -22,9 +22,9 @@ namespace web.Models
         public ApplicationUser Organizator { get; set; } = null!;
 
         [Range(1, int.MaxValue, ErrorMessage = "Izberite kategorijo")]
-        public int KategorijaId { get; set; }
+        public int? KategorijaId { get; set; }
         
-        public Kategorija Kategorija { get; set; } = null!;
+        public Kategorija? Kategorija { get; set; } = null!;
 
         public Lokacija? Lokacija { get; set; }
 
