@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using web.Models;
 using web.Data;
 using Microsoft.EntityFrameworkCore;//za dostop do baze
+using Microsoft.AspNetCore.Authorization;   //za avtorizacijo(pri prijavi na nek dogodek)
 
 namespace web.Controllers;
 
@@ -40,6 +42,7 @@ public class HomeController : Controller
             .Where(d => d.Lokacija != null)//pini se drugače ne morjo izrisali
             .Select(d => new
             {
+                d.Id, //potrebno vedet za udelezbo
                 Naziv = d.Naziv,
                 lat = d.Lokacija.Latitude, 
                 lng = d.Lokacija.Longitude,
@@ -51,6 +54,71 @@ public class HomeController : Controller
 
         return Json(events); 
     }
+
+    // Preveri, ali je uporabnik že prijavljen na dogodek + vrne stanje gumba
+[HttpGet]
+public async Task<IActionResult> GetUdelezbaStatus(int dogodekId)
+{
+    if (!User.Identity.IsAuthenticated)
+        return Json(new { prijavljen = false });
+
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+    var prijavljen = await _context.Udelezba
+        .AnyAsync(u => u.UporabnikId == userId && u.DogodekId == dogodekId);
+
+    return Json(new { prijavljen });
+}
+
+// Prijava / odjava (toggle)
+[HttpPost]
+[Authorize]   // obvezno prijavljen!
+public async Task<IActionResult> ToggleUdelezba([FromBody] ToggleUdelezbaRequest request)
+{
+    try
+    {
+        // 1. Preveri, če je uporabnik sploh prijavljen
+        if (!User.Identity.IsAuthenticated)
+            return Json(new { uspesno = false, sporocilo = "Ni prijavljen" });
+
+        // 2. Pridobi userId na 100% zanesljiv način
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Json(new { uspesno = false, sporocilo = "UserId ni najden" });
+
+        int dogodekId = request.DogodekId;  // ← DODAJ TO
+
+        // 3. Preveri, če dogodekId sploh pride
+        if (dogodekId <= 0)
+            return Json(new { uspesno = false, sporocilo = "Napačen dogodekId" });
+
+        // 4. Poišči obstoječo udeležbo
+        var obstoja = await _context.Udelezba
+            .FirstOrDefaultAsync(u => u.UporabnikId == userId && u.DogodekId == dogodekId);
+
+        if (obstoja != null)
+        {
+            _context.Udelezba.Remove(obstoja);
+            await _context.SaveChangesAsync();
+            return Json(new { uspesno = true, prijavljen = false });
+        }
+        else
+        {
+            _context.Udelezba.Add(new Udelezba
+            {
+                UporabnikId = userId,
+                DogodekId = dogodekId,
+                DatumPrijave = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+            return Json(new { uspesno = true, prijavljen = true });
+        }
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { uspesno = false, sporocilo = ex.Message, stack = ex.StackTrace });
+    }
+}
 }
 /* 
 public IActionResult GetEvents()

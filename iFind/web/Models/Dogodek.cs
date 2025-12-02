@@ -17,7 +17,7 @@ namespace web.Models
         [Required(ErrorMessage = "Datum in čas sta obvezna")]
         public DateTime DatumCas { get; set; }
 
-        // OrganizatorId ni required – ga nastavimo v controllerju
+        // OrganizatorId ni required – ga nastavimo v controllerju(sicer pri form ne spusti naprej)
         public string OrganizatorId { get; set; } = null!;
         public ApplicationUser Organizator { get; set; } = null!;
 

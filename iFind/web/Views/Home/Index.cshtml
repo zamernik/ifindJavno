@@ -20,7 +20,79 @@
 
 @section Scripts {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> <!-- link js za leaflet -->
+
     <script>
+        // Globalni token – enkrat preberemo iz layouta in ga uporabljamo povsod
+        const antiforgeryToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+        let currentDogodekId = 0;
+
+        async function togglePridem() {
+            if (!@User.Identity.IsAuthenticated.ToString().ToLower()) {
+                alert("Za prijavo na dogodek se moraš prijaviti v aplikacijo!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/Home/ToggleUdelezba', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': antiforgeryToken
+                    },
+                    body: JSON.stringify({ dogodekId: currentDogodekId })
+                });
+
+                if (!response.ok) {
+                    console.error("Napaka na strežniku:", response.status);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Odgovor od serverja:", data);  // ← DODAJ TO!
+
+                if (data.uspesno) {
+                    const btn = document.getElementById('pridemBtn');
+                    if (data.prijavljen) {
+                        btn.textContent = "Ne pridem";
+                        btn.style.background = "#dc3545";
+                    } else {
+                        btn.textContent = "Pridem!";
+                        btn.style.background = "#007bff";
+                    }
+                } else {
+                    alert("Napaka: " + (data.sporocilo || "Neznana napaka"));  // ← DODAJ TO ZA ALERT
+                }
+            } catch (err) {
+                console.error("Napaka pri klicu:", err);
+            }
+        }
+        async function nastaviGumb(dogodekId) {
+            console.log('Prejeti dogodekId v nastaviGumb:', dogodekId);  // ZAČASNO, da vidimo, če je undefined ali 0
+            currentDogodekId = dogodekId;
+            const btn = document.getElementById('pridemBtn');
+
+            if (!@User.Identity.IsAuthenticated.ToString().ToLower()) {
+                btn.textContent = "Pridem!";
+                btn.style.background = "#007bff";
+                return;
+            }
+
+            try {
+                const res = await fetch(`/Home/GetUdelezbaStatus?dogodekId=${dogodekId}`);
+                const data = await res.json();
+                if (data.prijavljen) {
+                    btn.textContent = "Ne pridem";
+                    btn.style.background = "#dc3545";
+                } else {
+                    btn.textContent = "Pridem!";
+                    btn.style.background = "#007bff";
+                }
+            } catch (err) {
+                console.error("Napaka pri preverjanju statusa:", err);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const map = L.map('map').setView([46.0569, 14.5058], 8); //nastavim na Slovenijo
 
@@ -28,11 +100,11 @@
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            fetch('/Home/GetEvents') //pridobi vse evente
+            fetch('/Home/GetEvents')
                 .then(r => r.json())
                 .then(data => {
+                    console.log('Vsi dogodki iz GetEvents:', data);  // ZAČASNO (ali ima vsak "id": številka >0)
                     data.forEach(e => {
-                        //nastavim in oblikujem elemente popupa ko kliknemo na pin
                         const popupHtml = `
                             <div style="font-family: Arial, sans-serif; min-width: 220px;">
                                 <h5 style="margin:0 0 6px 0; font-size:16px; color:#1a1a1a;">
@@ -48,8 +120,8 @@
                                     ${e.opis || e.Opis}
                                 </div>
                                 <div style="margin-top:12px; text-align:right;">
-                                    <button onclick="alert('Še ne narejeno :)')" 
-                                            style="background:#007bff; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">
+                                    <button id="pridemBtn" onclick="togglePridem()" 
+                                            style="color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; background:#007bff;">
                                         Pridem!
                                     </button>
                                 </div>
@@ -60,12 +132,13 @@
                             .addTo(map)
                             .bindPopup(popupHtml, { 
                                 maxWidth: 300,
-                                autoPanPaddingTopLeft: [50, 100],   //brez tega so opisi nekaterih pinnov ob kliku bili preveč gor in se delno niso videli
+                                autoPanPaddingTopLeft: [50, 100],
                                 autoPanPaddingBottomRight: [50, 50]
-                            });
+                            })
+                            .on('popupopen', () => nastaviGumb(e.id));
                     });
                 })
-                .catch(err => console.error('Napaka:', err));
+                .catch(err => console.error('Napaka pri pridobivanju dogodkov:', err));
         });
     </script>
 }
