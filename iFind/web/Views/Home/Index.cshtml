@@ -49,7 +49,7 @@
                 }
 
                 const data = await response.json();
-                console.log("Odgovor od serverja:", data);  // ← DODAJ TO!
+                console.log("Odgovor od serverja:", data);  
 
                 if (data.uspesno) {
                     const btn = document.getElementById('pridemBtn');
@@ -61,7 +61,7 @@
                         btn.style.background = "#007bff";
                     }
                 } else {
-                    alert("Napaka: " + (data.sporocilo || "Neznana napaka"));  // ← DODAJ TO ZA ALERT
+                    alert("Napaka: " + (data.sporocilo || "Neznana napaka"));  
                 }
             } catch (err) {
                 console.error("Napaka pri klicu:", err);
@@ -70,7 +70,7 @@
         async function nastaviGumb(dogodekId) {
             console.log('Prejeti dogodekId v nastaviGumb:', dogodekId);  // ZAČASNO, da vidimo, če je undefined ali 0
             currentDogodekId = dogodekId;
-            const btn = document.getElementById('pridemBtn');
+            const btn = document.getElementById('pridemBtn'); 
 
             if (!@User.Identity.IsAuthenticated.ToString().ToLower()) {
                 btn.textContent = "Pridem!";

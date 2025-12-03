@@ -77,22 +77,18 @@ public async Task<IActionResult> ToggleUdelezba([FromBody] ToggleUdelezbaRequest
 {
     try
     {
-        // 1. Preveri, če je uporabnik sploh prijavljen
         if (!User.Identity.IsAuthenticated)
             return Json(new { uspesno = false, sporocilo = "Ni prijavljen" });
 
-        // 2. Pridobi userId na 100% zanesljiv način
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId))
             return Json(new { uspesno = false, sporocilo = "UserId ni najden" });
 
-        int dogodekId = request.DogodekId;  // ← DODAJ TO
+        int dogodekId = request.DogodekId; 
 
-        // 3. Preveri, če dogodekId sploh pride
         if (dogodekId <= 0)
             return Json(new { uspesno = false, sporocilo = "Napačen dogodekId" });
 
-        // 4. Poišči obstoječo udeležbo
         var obstoja = await _context.Udelezba
             .FirstOrDefaultAsync(u => u.UporabnikId == userId && u.DogodekId == dogodekId);
 
