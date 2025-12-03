@@ -4,13 +4,123 @@
     ViewData["Title"] = "Create";
 }
 
-<h1 class="mb-4">Tukaj dodaš dogodek:</h1>
+<h1 class="mb-4 text-center">Tukaj dodaš dogodek:</h1>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<div class="row g-4">
-    <!-- LEVA STRAN: Form za oddat -->
-    <div class="col-lg-6">
+<style>
+
+/* ---- TVOJ CSS ---- */
+
+/* Glavna vrstica z levim in desnim stolpcem */
+.row_custom {
+    width: 70%;
+    align-items: stretch;
+    gap: 5px;
+    border-radius: 20px;
+    outline: 2px solid #871C87;
+    margin: 50px auto;
+    display: flex;
+    background-color: #ffffff;
+}
+
+.levi {
+    flex: 1;
+    padding: 5%;
+    border-radius: 20px;
+    background: linear-gradient(to right , #b388eb, #ffffff);
+}
+
+.desni {
+    flex: 1;
+    padding: 5%;
+    background-color: #ffffff;
+}
+
+input {
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Polja */
+.form-control {
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #871C87, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #871C87, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    color: black;
+}
+
+/* Gumbi */
+.gumbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.gumb_nazaj, .gumb_registracija {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 10px;
+    background-color: white;
+    outline: 2px solid #871C87;
+}
+
+.gumb_nazaj {
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    width: 37%;
+}
+
+.gumb_nazaj:hover {
+    background-color: #b388eb;
+    color: white;
+    box-shadow: 0 4px 6px #871C87;
+}
+
+.gumb_registracija {
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    width: 60%;
+}
+
+.gumb_registracija:hover {
+    background-color: #b388eb;
+    color: white;
+    box-shadow: 0 4px 6px #871C87;
+}
+
+</style>
+
+<div class="row_custom">
+    <!-- LEVI DEL -->
+    <div class="levi">
+
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="alert alert-danger mb-4">
@@ -22,8 +132,8 @@
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
 
-            <input type="hidden" id="Lat" name="Lat" value="" />
-            <input type="hidden" id="Lng" name="Lng" value="" />
+            <input type="hidden" id="Lat" name="Lat" />
+            <input type="hidden" id="Lng" name="Lng" />
 
             <div class="form-group mb-3">
                 <label asp-for="Naziv" class="control-label"></label>
@@ -46,29 +156,26 @@
             <div class="form-group mb-4">
                 <label asp-for="Kategorija" class="control-label"></label>
                 <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId">
-    <option value="">-- Izberi kategorijo --</option>
-</select>
+                    <option value="">-- Izberi kategorijo --</option>
+                </select>
                 <span asp-validation-for="KategorijaId" class="text-danger"></span>
             </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-success btn-lg">Dodaj dogodek</button>
-                <a asp-action="Index" class="btn btn-secondary btn-lg">Prekliči</a>
+            <div class="gumbi">
+                <a asp-action="Index" class="gumb_nazaj">Prekliči</a>
+                <button type="submit" class="gumb_registracija">Dodaj dogodek</button>
             </div>
         </form>
     </div>
 
-    <!-- DESNA STRAN: Zemljevid + info -->
-    <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body p-0">
-                <div id="map" style="height: 500px; border-radius: 8px;"></div>
-            </div>
-            <div class="card-footer bg-white border-0">
-                <div id="coordinates" class="text-center py-2">
-                    <em>Izberite točko na zemljevidu za postavitev pina.</em>
-                </div>
-            </div>
+    <!-- DESNI DEL -->
+    <div class="desni">
+        <div style="border-radius: 20px; overflow: hidden; border: 2px solid #871C87;">
+            <div id="map" style="height: 500px;"></div>
+        </div>
+
+        <div id="coordinates" class="text-center py-3">
+            <em>Izberite točko na zemljevidu za postavitev pina.</em>
         </div>
     </div>
 </div>
@@ -80,6 +187,7 @@
 
     <script>
         var map = L.map('map').setView([46.0512, 14.5051], 8);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
