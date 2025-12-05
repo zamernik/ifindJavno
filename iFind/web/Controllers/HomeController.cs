@@ -115,6 +115,27 @@ public async Task<IActionResult> ToggleUdelezba([FromBody] ToggleUdelezbaRequest
         return StatusCode(500, new { uspesno = false, sporocilo = ex.Message, stack = ex.StackTrace });
     }
 }
+// Prikaže seznam mojih dogodkov(prijavljenega organizatorja) + število prijavljenih
+[Authorize]
+public async Task<IActionResult> MojiDogodki()
+{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    var mojiDogodki = await _context.Dogodek
+        .Where(d => d.OrganizatorId == userId) 
+        .Select(d => new MojiDogodkiViewModel
+        {
+            Id = d.Id,
+            Naziv = d.Naziv,
+            DatumCas = d.DatumCas,
+            Opis = d.Opis,
+            SteviloPrijav = _context.Udelezba.Count(u => u.DogodekId == d.Id)
+        })
+        .OrderBy(d => d.DatumCas)
+        .ToListAsync();
+
+    return View(mojiDogodki);
+}
 }
 /* 
 public IActionResult GetEvents()

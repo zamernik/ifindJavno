@@ -1,0 +1,40 @@
+@model List<web.Models.MojiDogodkiViewModel>
+@{
+    ViewData["Title"] = "Moji dogodki";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Moji dogodki</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-4">
+        <strong>Nimate še nobenega dogodka.</strong> <a asp-action="Create" asp-controller="Dogodki">Ustvari prvega!</a>
+    </div>
+}
+else
+{
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>Datum in ura</th>
+                <th>Opis</th>
+                <th>Prijavljeni</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dogodek in Model)
+            {
+                <tr>
+                    <td><strong>@dogodek.Naziv</strong></td>
+                    <td>@dogodek.DatumCas.ToString("dd. MM. yyyy HH:mm")</td>
+                    <td>@(string.IsNullOrEmpty(dogodek.Opis) ? "/" : dogodek.Opis)</td>
+                    <td>
+                        <span class="badge bg-primary">@dogodek.SteviloPrijav</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
