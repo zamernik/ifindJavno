@@ -1980,3 +1980,7 @@ C:\Users\zamer\ifindJavno\iFind\web\obj\Debug\net10.0\refint\web.dll
 C:\Users\zamer\ifindJavno\iFind\web\obj\Debug\net10.0\web.pdb
 C:\Users\zamer\ifindJavno\iFind\web\obj\Debug\net10.0\web.genruntimeconfig.cache
 C:\Users\zamer\ifindJavno\iFind\web\obj\Debug\net10.0\ref\web.dll
+C:\Users\zamer\ifindJavno\iFind\web\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\Users\zamer\ifindJavno\iFind\web\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\zamer\ifindJavno\iFind\web\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\zamer\ifindJavno\iFind\web\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
