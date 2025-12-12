@@ -7139,19 +7139,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jantu\\.nuget\\packages\\": {}
+    "C:\\Users\\zamer\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\iFind\\web\\web.csproj",
+      "projectUniqueName": "C:\\Users\\zamer\\ifindJavno\\iFind\\web\\web.csproj",
       "projectName": "web",
-      "projectPath": "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\iFind\\web\\web.csproj",
-      "packagesPath": "C:\\Users\\jantu\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jantu\\Faks2Letnik\\IS projekti\\iFind\\iFind\\web\\obj\\",
+      "projectPath": "C:\\Users\\zamer\\ifindJavno\\iFind\\web\\web.csproj",
+      "packagesPath": "C:\\Users\\zamer\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\zamer\\ifindJavno\\iFind\\web\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\jantu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\zamer\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
