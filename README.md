@@ -73,7 +73,7 @@ Bom dopisal(gumb Pridem in stran za organizatorjev pregled)
  
 RAZVOJ ANDROID APLIKACIJE
 Bom kratko opisal.
- <img width="235" height="520" alt="image" src="https://github.com/user-attachments/assets/5b154d40-e7b7-4ca5-9add-9a8efdd38982" />
+<img width="235" height="520" alt="image" src="https://github.com/user-attachments/assets/5b154d40-e7b7-4ca5-9add-9a8efdd38982" />
 
 
 
