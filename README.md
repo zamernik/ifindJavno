@@ -1,109 +1,80 @@
+IFIND
+
 Člana ekipe:
 63240336 Jan Tuhtar
 63240357 Jan Zamernik
-
+UVOD
 Iskanje dogodkov na internetu je lahko zamudno, poleg tega pa vsi dogodki niso oglaševani na spletnih straneh ali plakatnih panojih. Z informacijskim sistemom iFind želimo ta problem rešiti tako, da bi omogočili enostavno objavljanje in iskanje dogodkov na interaktivnem zemljevidu.
-
 Organizatorji bi imeli brezplačen dostop do aplikacije, kjer bi po prijavi lahko dodajali nove dogodke z opisom, lokacijo, datumom in kategorijo (npr. koncert, šport, delavnica). 
-
 Uporabniki bi lahko na zemljevidu hitro našli vse dogodke, ki jih zanimajo in lahko potrdili udeležbo.
+NAJINO DELO
+POVEZAVA Z BAZO
+Najprej sem ustvaril MVC aplikacijo z uporabo osnovne MVC predloge. Aplikacijo sem nato, po zgledu iz vaj, povezal s podatkovno bazo. Za vzpostavitev povezave sem uporabil Docker, kjer sem ustvaril container z najnovejšim SQL Server imageom in nastavil geslo za dostop (MojGeslo123!).
+V okolju VS Code sem namestil razširitev SQL Server, saj je tako najbolj praktično imeti podatkovno bazo na istem mestu kot izvorno kodo. V aplikaciji sem v datoteko appsettings dodal ustrezen connection string, ki sem ga nato uporabil v datoteki Program.cs.
+Nato sem začel s kreacijo tabel v mapi Models. Ustvarjeni modeli (tabele) so:
+•	Uporabnik (osnovni podatki, atributa je_administrator in je_uporabnik),
+•	Dogodek (osnovni podatki o dogodku),
+•	Kategorija (kategorija, pod katero dogodek spada),
+•	Lokacija (geografska širina in dolžina dogodka),
+•	Udeležba (povezovalna tabela, ki prikazuje, kateri uporabnik se udeleži katerega dogodka, ter vsebuje tudi števec).
+Po tem sem ustvaril mapo Data in v njej razred iFindContext. V njem sem definiral vse tabele ter nastavil poimenovanje tabel v množini (npr. Uporabnik → Uporabniki), saj je privzeto poimenovanje v angleščini (npr. Uporabnik → Uporabniks). Ker ima tabela Udeležba sestavljen primarni ključ, sem to ustrezno definiral v kontekstu, da se ob kreaciji baze pravilno vzpostavi.
+Za lažje upravljanje sem za dogodke, kategorije in uporabnike ustvaril tudi controllerje, ki omogočajo enostavnejšo implementacijo. Te controllerje bom po potrebi kasneje odstranil ali pa dodal nove za ostale tabele.
+Nato sem izvedel migracijo baze. Pri prvi migraciji je EF Core za tabelo Udeležba nastavil ON DELETE CASCADE na obeh tujih ključih (do tabel Uporabniki in Dogodki), kar je v SQL Serverju povzročilo napako zaradi več cikličnih cascade poti. Težavo sem rešil tako, da sem v metodi OnModelCreating ročno nastavil .OnDelete(DeleteBehavior.NoAction) na relaciji Udeležba → Uporabnik. Po tem sem izbrisal staro bazo in mapo Migrations ter ustvaril popolnoma novo migracijo. Po tej spremembi baza deluje brez težav.
+Na koncu sem bazo testiral s pomočjo ustvarjenih controllerjev. Dodal sem novega uporabnika ter nekaj osnovnih kategorij. V naslednjem koraku sledi nadaljevanje razvoja aplikacije, in sicer implementacija registracije uporabnikov, avtentikacije in avtorizacije ter izdelava začetne (home) strani.
+REGISTRACIJA IN PRIJAVA V APLIKACIJO
+V datoteki /Views/Shared/_Layout.cshtml sem dodal dve novi navigacijski povezavi, in sicer do strani Prijava in Registracija. Za obe povezavi sem nastavil ustrezna asp-controller in asp-action atributa, ki kažeta na pripadajoče poglede. V tem primeru je stran Registracija povezana s pogledom Uporabniki/Create.cshtml.
+Ker aplikacija uporablja lasten CSS, sem v mapi /wwwroot/css dodal novo datoteko registracija.css, v kateri je definiran slog za registracijsko stran. To CSS datoteko sem vključil v pogled /Views/Uporabniki/Create.cshtml z uporabo razdelka @section Styles { ... }. Da je bilo to omogočeno, sem moral v glavno predlogo _Layout.cshtml znotraj elementa <head> dodati klic @RenderSection("Styles", required: false).
+Odstranil sem možnost, da uporabnik sam določa datum in čas registracije, saj to ni smiselno. Namesto tega se ob registraciji samodejno zapišeta trenutni datum in čas. To logiko sem implementiral v kontrolerju UporabnikiController. Ostalih delov controllerjev nisem spreminjal.
+Popravil sem tudi kontroler za uporabnike, saj je bilo potrebno dodati funkcionalnost prijave uporabnika, ki predhodno ni bila implementirana. Omenjena funkcionalnost ni bila samodejno ustvarjena s pomočjo code generatorja. Poleg tega sem dodal še nov pogled Prijava, ki uporabniku omogoča prijavo v aplikacijo.
+Preko orodja NuGet sem v projekt dodal paketa Microsoft.AspNetCore.Identity.EntityFrameworkCore in Microsoft.AspNetCore.Identity.EntityFrameworkCore.UI, pri čemer sem za oba izbral najnovejšo razpoložljivo različico, tj. verzijo 10.0.
+<img width="945" height="447" alt="image" src="https://github.com/user-attachments/assets/3b18e96b-d840-4baf-89df-44b7268efecf" />
 
+ 
+DODAJANJE ZEMLJEVIDA V APLIKACIJO
+Najprej sem namestil orodje Git, da je omogočeno enostavno upravljanje projekta z uporabo push in pull operacij na GitHubu. Pri tem je Git v projekt dodal nekaj novih datotek, ki so potrebne za pravilno delovanje verzioniranja.
+Nato sem začel z implementacijo zemljevida. Odločil sem se, da bo zemljevid zaenkrat umeščen na začetno (home) stran aplikacije, z možnostjo kasnejše prestavitve na drugo lokacijo v okviru aplikacije.
+V HomeController sem dodal metodo GetEvents, katere naloga je pridobivanje podatkov o dogodkih iz tabel Dogodek, Lokacija in Kategorija. Ker organizatorji dogodkov v trenutni fazi še ne morejo vnašati dogodkov, sem v metodo dodal testne podatke. To mi omogoča preverjanje pravilnosti prikaza dogodkov na zemljevidu.
+Sledila je implementacija prikaza zemljevida v pogledu Index.cshtml. Sprva sem razmišljal o uporabi Google Maps API-ja, vendar sem se na koncu odločil za knjižnico Leaflet. Zemljevid se prikaže med glavo (header) in nogo (footer), ki sta definirani v datoteki _Layout.cshtml, kar mi je povzročilo nekaj težav pri postavitvi.
+Zemljevid nato obdela vse dogodke, ki so trenutno definirani v kontrolerju. Na podlagi geografskih koordinat (latitude in longitude) se za vsak dogodek doda oznaka (marker) na zemljevid. Ob kliku na oznako se prikaže pojavno okno (pop-up) s podatki o dogodku ter možnostjo udeležbe, ki je izvedena s klikom na gumb.
+Celotna funkcionalnost zemljevida je implementirana v JavaScriptu, koda pa vsebuje tudi komentarje za lažje razumevanje delovanja.
+<img width="945" height="481" alt="image" src="https://github.com/user-attachments/assets/759767d5-65b0-42f4-8964-669466761deb" />
 
-Najino delo:
-POVEZAVA Z BAZO (JT):
-Najprej sem ustvaril mvc aplikacijo(z osnovno mvc predlogo), ki sem jo najprej(po zgledu iz vaj) povezal z podatkovno bazo. Za povezavo sem naredil container v dockerju z najnovejšim imigom in določil geslo(MojGeslo123!).
+AVTENTIKACIJA UPORABNIKOV, PREHOD NA IDENTITY SISTEM TER POVEZAVA NA AZURE
+Ustvaril sem razred ApplicationUser, saj aplikacija uporablja ASP.NET Identity namesto lastne tabele uporabnikov. Razredu sem dodal osnovne atribute (ime, priimek ipd.) in ustvaril novo migracijo. Po tem sem izbrisal obstoječo bazo ter jo ponovno ustvaril z ukazom database update, s čimer so se samodejno ustvarile tudi vse Identity tabele.
+Prilagodil sem Program.cs, da uporablja avtentikacijo in Razor Pages. S pomočjo code generatorja sem ustvaril Identity strani, ki se nahajajo v mapi /Areas, ter pridobil tudi _LayoutPartial, ki dinamično prikazuje možnosti glede na stanje prijave uporabnika.
+Registracijske strani sem razširil tako, da uporabnik vnese ime, priimek in ostale zahtevane podatke. Registracija in prijava sta bili testirani in delujeta pravilno. Omogočene so tudi napredne varnostne funkcije, kot so močna gesla, validacije in podpora za dvofaktorsko avtentikacijo. V tabelo AspNetRoles sem dodal vloge administrator, organizator in uporabnik. Strani za prijavo in registracijo sem dodatno oblikoval s CSS.
+Identity strani (registracija, prijava, upravljanje profila) sem prevedel v slovenščino ter prilagodil pozdravno besedilo. Odstranil sem nekatere nepotrebne Identity strani (npr. e-poštno potrjevanje in 2FA), ki jih trenutno ne uporabljamo. Ustvaril sem tudi ločeno datoteko Manage.css za urejanje uporabniškega profila.
+Na Azure sem aktiviral študentsko naročnino ter ustvaril novo SQL podatkovno bazo in App Service v isti resource group (ifind.gr). Aplikacijo sem povezal z Azure SQL bazo preko novega connection stringa in z dotnet ef database update uspešno ustvaril tabele tudi v oblačnem okolju. Aplikacija se uspešno zažene in deluje.
+Zaradi prehoda na ASP.NET Identity sem moral prilagoditi podatkovni model. V tabeli Dogodki sem spremenil stolpec OrganizatorId iz int v nvarchar(450) in ga ponovno povezal na AspNetUsers.Id. Ob tem sem odstranil stare indekse, preveril podatke ter zagotovil konsistenco.
+Tabelo Udelezbe sem ponovno ustvaril tako, da uporablja UporabnikId (FK na AspNetUsers) in DogodekId (FK na Dogodki) s sestavljenim primarnim ključem, kar preprečuje podvojene prijave uporabnikov na iste dogodke.
+Na koncu sem odpravil napake pri prevajanju, povezane z Razor pogledi, kjer se je napačno dostopalo do lastnosti Geslo v razredu ApplicationUser, ki ne obstaja in se ne sme prikazovati. Opozorila glede nullable tipov ne vplivajo na delovanje aplikacije, ključne napake pa so zdaj jasno identificirane in pripravljene za odpravo v naslednjem koraku.
 
-V VS Code sem si naložil SQL Server extension(saj bo tako najbolj praktično, da boma imela bazo na istem mestu kot izvorno kodo). V aplikaciji sem pod appsettings dodal connectionString te povezave, v program.cs. Nato sem pričel z 
-kreacijo tabel v mapi Models. Tabele(modeli) so naslednje: Uporabnik(osnovni podatki, je_administrator, je_uporabnik), Dogodek(osnovni podatki o dogodku), Kategorija(pod katero kategorijo dogodek spada), Lokacija(latitude in longitude dogodka), 
-Udeležba(prikazuje kater uporabnik gre na kater dogodek, vsebuje tudi števec). Nato sem ustvaril mapo Data in v njej iFindContext, definiral tabele, in definiral kako bo izgledal zapis tabel v množini(npr. uporabnik -> uporabniki 
-, saj je privzeto v angleščini -> uporabniks). zaradi tega ker ima tabela Udeležba sestavljen PK, sem to tudi zapisal tukaj, da bo ob kreaciji baze to dejansko tako določilo. Za lažje upravljanje sem za dogodke, kategorije,
-in uporabnike kreiral tudi controllerje, za enostavnejšo implementacijo, ki jih boma po potrebi izbrisala ali dodala še kakšnega za drugo tabelo. Nato sem začel z migracijo. V prvi migraciji je EF Core za tabelo Udelezbe nastavil ON DELETE CASCADE 
-na obeh FK (do Uporabniki in Dogodki), kar je v SQL Serverju povzročilo napako zaradi več cikličnih cascade poti. Rešitev: v OnModelCreating sem ročno nastavil .OnDelete(DeleteBehavior.NoAction) na relaciji 
-Udelezba → Uporabnik, izbrisal staro bazo in mapo Migrations ter naredil čisto novo migracijo. Po tem baza deluje brez težav. Nato sem bazo (s pomočjo controllerjev, ki sem jih dodal) testiral; dodal sem novega uporabnika,
-ter nekaj osnovnih kategorij. Zdaj sledi nadaljevanje ustvarjanja aplikacije- registracija uporabnika- avtentikacija/avtorizacija in nato izdelava home paga. 
+DODAJANJE MOŽNOSTI VNAŠANAJA DOGODKA
+V navigacijsko vrstico na vrhu strani (Views/Shared/_Layout.cshtml) sem dodal povezavo do kontrolerja Dogodki, ki je bil ustvarjen že v prejšnji fazi razvoja. Ker mora organizator ob vnosu dogodka določiti tudi njegovo kategorijo, sem preko kontrolerja za kategorije v podatkovno bazo dodal nekaj osnovnih kategorij z opisi. Te so organizatorju na voljo pri ustvarjanju dogodka, dodatno pa je vključena tudi kategorija Drugo za primere, ko obstoječe kategorije niso ustrezne.
+Odstranil sem možnost ročnega vnosa OrganizatorId, saj je smiselno, da sistem ta podatek samodejno pridobi na podlagi trenutno prijavljenega uporabnika. Ostali podatki dogodka (naziv, opis, čas in kategorija) so ostali nespremenjeni glede na obstoječo implementacijo v kontrolerju.
+Poleg osnovnih podatkov mora organizator ob vnosu dogodka določiti tudi lokacijo. Ker je tabela Lokacija v relaciji 1 : 1 s tabelo Dogodki in vsebuje tuji ključ na dogodek, je potrebno dogodek najprej ustvariti, šele nato pa shraniti pripadajočo lokacijo. To zaporedje je implementirano v kontrolerju.
+Za boljšo uporabniško izkušnjo sem se odločil, da ročni vnos zemljepisne širine in dolžine ni primeren, zato sem lokacijo rešil z uporabo interaktivnega zemljevida. Organizator na zemljevidu izbere lokacijo s klikom, s čimer se samodejno shranita latitude in longitude izbranega pina. Trenutno se ti vrednosti še izpisujeta na zaslonu zgolj za namen preverjanja pravilnega delovanja, kasneje pa bo ta izpis odstranjen. Vizualna podoba vnosa še ni dokončno urejena, funkcionalnost pa deluje.
+Zemljevid je implementiran podobno kot na začetni strani. Ob kliku se ustvari pin, ob ponovnem kliku drugje se prejšnji pin odstrani in zamenja z novim, vrednosti lat in lng pa se sproti posodabljajo. Ti podatki se v obrazec prenašajo preko skritih (hidden) polj.
+Nato sem nadaljeval z razvojem v DogodekControllerju. Osnovno strukturo sem ohranil, dodal pa sem pridobivanje identifikatorja prijavljenega uporabnika z uporabo User.FindFirstValue. Če uporabnik ni prijavljen, se izpiše ustrezno obvestilo, čeprav do teh funkcionalnosti neprijavljeni uporabniki nimajo dostopa. Pridobljen uporabniški ID se skupaj z ostalimi podatki iz obrazca shrani v tabelo Dogodki, nato pa se v tabelo Lokacija shrani še lokacija, vezana na ustvarjeni dogodek.
+Trenutno vnos dogodka še ne deluje pravilno, najverjetneje zaradi konflikta z ASP.NET Identity sistemom, saj je ta funkcionalnost pred integracijo Identity delovala brez težav. Funkcionalnosti, namenjene administratorju (urejanje, brisanje ipd.), so ostale nespremenjene.
+<img width="945" height="574" alt="image" src="https://github.com/user-attachments/assets/95bd8719-47dc-4fb6-ad66-ba6340ee2bac" />
+ 
+PRIDOBITEV DOGODKA IZ PODATKOVNE BAZE TER IZRIS NA ZEMLJEVIDU
+V HomeControllerju je bila že prisotna tabela testEvents, ki je vsebovala testne podatke za preverjanje pravilnega izrisa in prikaza dogodkov na glavnem zemljevidu. Te podatke sem uporabljal izključno za testiranje.
+Najprej sem v HomeController dodal dostop do podatkovne baze preko iFindContext. Obstoječo metodo GetEvents sem nato razširil tako, da podatke pridobiva neposredno iz tabel Dogodek, Kategorija in Lokacija. Dodal sem pogoj, da mora imeti dogodek definirano lokacijo, saj brez nje prikaz na zemljevidu ni mogoč. Iz navedenih tabel sem s poizvedbo pridobil vse potrebne podatke za izris dogodkov na zemljevidu.
+Za preverjanje delovanja sem začasno preklopil connection string na lokalno podatkovno bazo, ker na Azure strežniku trenutno še ni vnešenih dogodkov. V lokalno bazo sem dodal testni dogodek z lokacijo in preveril njegov izpis na zemljevidu, ki je deloval pravilno.
+Po uspešnem testiranju sem testne primere zakomentiral in jih premaknil na dno datoteke, kjer so shranjeni za morebitno nadaljnjo uporabo.
+<img width="565" height="416" alt="image" src="https://github.com/user-attachments/assets/07f0f1a1-64a3-4cb5-8677-3a862ad47373" />
+ 
+DODAJANJE MOŽNOSTI PREGLEDA NAD ORGANIZATORJEVIMI DOGODKI TER PREGLEDA PREDVIDENE UDELEŽBE
+Bom dopisal(gumb Pridem in stran za organizatorjev pregled)
+<img width="945" height="160" alt="image" src="https://github.com/user-attachments/assets/b573a0b2-632c-417b-b374-c86ea9bd4369" />
 
+ 
+RAZVOJ ANDROID APLIKACIJE
+Bom kratko opisal.
+ <img width="235" height="520" alt="image" src="https://github.com/user-attachments/assets/5b154d40-e7b7-4ca5-9add-9a8efdd38982" />
 
-PRIJAVA,REGISTRACIJA,CSS IN NEKKAJ MALENKOSTI(JZ):
-V /Views/Shared/_Layout.cshtml sem dodal dve novi povezavi do strani Prijava in do strani Registracija, pravtako sem nastavil asp-controllerja za te dve povezavi, ki sta povezana na določen pogled. V tem primeru je Registracija povezana na Uporabniki/create.cshtml.
-
-Ker bova uporabljala svoj lasten css, sem v folderju /wwwroot/css dodal datoteko: registracija.css, v katero sem napsial css za registracijo.
-
-V pogled /view/uporabniki/create.html sem vključil css datoteko z ukazom @section styles{...}, da to deluje, sem moral v glavno cshtml datoteko torej _Layout.cshtml v <head> vključiti     @RenderSection("Styles", required: false).
-
-Odstranil em, da lahko uporabnik sam določa datum in čas registracije, sej mi ni smiselno, naredil sem tako, da se vzame trenutni čas in trenutni datum. To sem dodal tudi v kontroler uporabnikiController. Ostalo nisem spreminjal v controllerjih.
-
-Popravil sm controller za uporabnika, saj sem moral dodati prijavo uporabnika,ki predhodno ni bila implementirana,saj je code generator sam po sebi ne ustvari, nato sme v poglede dodal pogled Prijava,da e uporabnik lahko prijavi.
-
-Nimava metode createdbifnotexists, glej video 3, cca 50. minuta in vstavljenih userjev cca 45mnuta.
-
-Preko Nugeta sem dodal Microsoft.AspNetCore.Identity.EntityFrameworkCore in izbral kar najnovejso verzijo tj. 10.0 in enake verzije 
-Microsoft.AspNetCore.Identity.EntityFrameworkCore.UI.
-P.S. Dodal sem velik komentarjev, da ti bo jasno kaj sem delal.
-
-
-DODAJANJE ZEMLJEVIDA Z DELUJOČIMI PINNI(JT)
-Najprej sem si naložil git za lažje push/pullanje najinega projekta iz githuba. To je stvarilo nekaj novih filov znotraj projekta. Nato sem pričel z implementacijo zemljevida. Določil sem, da bo zemljevid kar na home strani, lahko pa se kasneje prestavi. 
-V Home Controllerju sem dodal metodo getEvents- ki bo pridobila podatke o dogodku, iz tabel dogodek, lokacija, kategorija. Zaenkrat še organizator ne more vpisovati dogodkov, zato sem dal notri testne podatke, da bom lahko vseeno preveril pravilnost izpisa na zemljevidu. 
-Potem sem začel z prikazom zemljevida na index.cshmtl, najprej sem mislil z implementacijo z APIjem GoogleMapsa, a sem ugottovil da je z leafletom. Na kratko- Prikaže zemljevid med footom in headerjev, ki sta narejena v layout.cshtml(zo mi je povzročalo kar nekaj težav), potem gre čez vse dogodke, ki se zdaj nahajajo v controllerju, jih glede na njihovo lat in lng doda na zemljevid, ob kliku nanj pa sproži pop-up z podatki o dogodku ter možnostjo udeležbe s klikom na gumb. Vse narejeno v js, dodal sem nekaj komentarjev za razumevanje. 
-
-
-
-
-AUTENTIKACIJA, AZURE, GITHUB ... (JZ)
-Ustvaril sem razred ApplicationUser, saj bomo uporabljali Identity razširitev namesto lastne tabele uporabniki. Razredu ApplicationUser sem dodal nekaj atributov, kot so ime, priimek … (glej Models/ApplicationUser). Nato sem ustvaril novo migracijo z imenom ApplicationUser. Po tem sem izbrisal obstoječo podatkovno bazo in jo ponovno posodobil z ukazom database update, ki je ponovno izvedel migracije. S tem se je ustvarilo kar nekaj novih tabel, ki so posledica Identity implementacije.
-
-Prilagodil sem program.cs, da uporablja avtentikacijo in Razor pages, ter generiral potrebne poglede. S code generatorjem sem ustvaril nove strani, ki so sedaj vidne pod /web/Areas. Pri tem generiranju se je v zavihku /Views ustvaril tudi _LayoutPartial, ki deduje od Identity. Vsebuje dva gumba, ki prikazujeta podatke glede na to, ali je uporabnik prijavljen ali ne.
-
-Moral sem prilagoditi precej stvari v strani za registracijo. Dodal sem, da mora uporabnik vnesti ime, priimek in ostale potrebne podatke, da registracija deluje. Dodal sem vse atribute, ki jih mora uporabnik izpolniti, da se uspešno registrira. Vse skupaj sem testiral in deluje. Omogočena je napredna avtentikacija, torej močna gesla, dvojna avtentikacija, preverjanje sintaktičnih napak itd.
-
-V tabelo AspNetRoles sem dodal tri vloge: administrator, organizator in uporabnik. Na koncu sem novim stranem za registracijo in prijavo dodal še CSS.
-
-Prevedel sem ustvarjene strani za registracijo, prijavo in urejanje osebnih podatkov v slovenščino ter dodal, da se namesto »Hello email…« izpiše »Pozdravljen Ime…«.
-
-Pobrisal sem nekaj strani, ki sva jih dobila z Identity, saj jih trenutno ne potrebujeva, npr. dvojna avtentikacija in potrditev preko e-pošte.
-
-Napisal sem Manage.css, v katerem se hrani CSS za uporabniški profil, saj registracija.css ni ustrezal. Poleg tega sem prevedel vse strani, ki se tičejo urejanja uporabniškega profila.
-
-Na spletni strani Azure sem se prijavil preko študentskega e-maila in aktiviral Azure naročnino. V Azure sem ustvaril novo SQL podatkovno bazo z naslednjimi podatki:
-
-Resource group: ifind.gr
-
-Ime podatkovne baze: ifind-db
-
-Server name: ifind-db
-
-Lokacija: (Europe) Germany West
-
-Administrator: su-ifind
-
-Geslo: Mojegeslo123!
-
-Service tier: Basic (do 2 GB podatkov)
-
-V lokalno podatkovno bazo sem moral dodati novo povezavo s strežnikom ifind-database.database.windows.net. Aplikacijo sem povezal s spletnim strežnikom tako, da sem dodal nov connection string z zgornjimi podatki ter spremenil ime v program.cs. Z ukazom dotnet ef database update sem posodobil podatkovno bazo, tako da so se tabele ustvarile tudi na Azure. Nato sem pognal build in run aplikacije.
-
-Ustvaril sem tudi nov App Service v Azure, ki sem ga dodelil isti resource group kot podatkovno bazo, torej ifind.gr. Aplikacijo sem poimenoval ifind-si in nastavil strežnik na Germany West Central, enako kot za DB strežnik, ter uporabil Free plan.
-
-V tabeli dbo.Dogodki sem najprej odstranil obstoječi tuji ključ, ki je povezal stolpec OrganizatorId s tabelo dbo.Uporabniki, ker smo prešli na uporabo ASP.NET Identity sistema, kjer se uporabniki hranijo v tabeli dbo.AspNetUsers z identifikatorji tipa nvarchar. Zaradi tega sem spremenil podatkovni tip stolpca OrganizatorId iz int v nvarchar(450), da je kompatibilen z novimi identifikatorji. Pred spremembo sem odstranil indeks, ki je bil odvisen od tega stolpca, saj bi sicer ALTER TABLE ne uspel. Nato sem preveril in posodobil ali odstranil vse vrednosti OrganizatorId, ki niso obstajale v tabeli AspNetUsers, da ne bi prišlo do konflikta z novim tujem ključem. Po čiščenju podatkov sem dodal nov FOREIGN KEY, ki zdaj povezuje OrganizatorId z AspNetUsers.Id, kar omogoča pravilno referenciranje uporabnikov iz nove identitetne sheme. Na koncu sem po potrebi izbrisal vse vrstice iz tabele Dogodki, da sem zagotovil konsistenco podatkov in možnost novih vnosov v skladu z novo strukturo.
-
-Tabelo Udelezbe sem najprej izbrisal, da sem odstranil obstoječe tuje in primarne ključe, nato pa sem ustvaril novo tabelo z stolpci UporabnikId tipa NVARCHAR(450), ki je tuji ključ na AspNetUsers.Id, DogodekId tipa INT, ki je tuji ključ na Dogodki.Id, in DatumPrijave tipa DATETIME2 za beleženje časa prijave. Primarni ključ sem določil kot kombinacijo UporabnikId in DogodekId, da preprečim podvajanje prijav istega uporabnika na isti dogodek, sprememba pa zagotavlja skladnost s podatkovnim modelom ASP.NET Identity in omogoča učinkovito upravljanje prijav uporabnikov na dogodke.
-Najprej sem odpravil napako v modelu Dogodek, kjer sem popravil definicije lastnosti in odstranil morebitne nepravilnosti. Nato sem ponovno pognal dotnet build in dobil nova opozorila ter tri ključne napake. Te napake so se nanašale na Razor poglede, kjer je koda dostopala do lastnosti Geslo v modelu ApplicationUser, ki pa v resnici ne obstaja. Identificiral sem problematične datoteke (Delete.cshtml, Details.cshtml in Index.cshtml) ter razumel, da moram iz pogledov odstraniti prikaz lastnosti Geslo, ker ta ni del modela in je ne bi smel nikoli prikazovati. Ugotovil sem tudi, da so nekatera opozorila povezana z nullable tipi, vendar ta ne preprečujejo delovanja. Glavne napake zdaj izvirajo iz napačnih referenc na ApplicationUser.Geslo, ki jih bom popravil v naslednjem koraku.
-
-VNAŠANJE DOGODKA(JT):
-V navigacijsko vrstico na vrhu strani(views/shared/layout) sem dodal povezavo do dogodki controllerja, ki sem ga že predhodno naredi. Ker mora organizator ob vnosu dogodka zabeležiti tudi njegovo kategorijo, sem preko kontrolerja za kategorijo z opisi vnesel nekaj osnovnih kategorij. Organizator jih ima tako pri vnosu dogodka na izbiro, če ne ustreza nobeni kategoriji sem dodal drugo.  
-Izbrisal sem možnost vnosa organizatorId(saj je smiselno da tega sistem ob vnosu pridobi sam glede na prijavljenega uporabnika), ostalo sem pustil tako kot je bilo narejeno v controllerju(naziv, opis, čas, kategorija dogodka).
-Poleg tega pa mora organizator v tabelo vpisati tudi lokacijo dogodka. Problem je, ker lokacija nosi FK na Dogodek(1:1 povezava), zato je treba dogodek kreirati pred lokacijo(sprogramiram kasneje v controllerju).  
-Da je vnos lokacije uporabniško prijaznejši(ročno vpisovanje latitude in longitude ne bi bilo estetsko) sem se odločil da to rešim preko implementacije zemljevida, kjer organizator določi pin in se avtomatsko shrani lat in lng tega pina. Na zaslonu se trenutno lat in lng izpišeta, zgolj zaradi tega da preverjam če se vrednosti pravilno shranita v spremenljivko, kar lahko kasneje odstranima, saj je za uporabnika nepotrebno. Estetsko stran še ni lepo urejena, vpisovanje podatkov deluje.
-Zemljevid na kratko- implementiran podobno kot na glavni strani, ob kliku se pojavi pin, shranita se lat in lng(definirana kot hidden inputa za razliko od drugih), ob kliku drugam se prejšni pin izbriše, pojavi nov, vrednosti se posodobita.
-
-Nato sem začel z delom v Dogodek Controllerju. Osnovno strukturo sem pustil enako, dodal pa sem: User.findFirstValu- za pridobivanje id-ja uporabnika, sicer naj izpiše da ni prijavljen(kar niti ne bo potrebno glede na to da neprijavljeni ne bodo imeli dostopa). V dogodek torej shranimo ta id in druge pridobljene informacije iz forma, dogodek tako kreiramo. nato pridobimo še lat in lng, ki jo skupaj z id-jem dogodka shranimo v tabelo Lokacija. Vnos najverjetneje zaradi konflikta z identity(vnos dogodka je namreč pred tem deloval) tabelo trenurno ne deluje. Ostale funkcije, ki so namenjene administratorju(edit, delete...) sem pustil nespremenjene. 
-
-PRIDOBITEV in IZRIS DOGODKA(JT):
-V HomeControllerju že imama tabelo testEvents, a so podatki tukaj testni, da sem prej preverjal pravilen izris in izpis glavnega zemljevida. Home controllerju sem najprej dodal dosto do baze(ifind context). Pod že definirano metodo GetEvents sem v njih dodal tabele Dogodek, Kategorija, Lokacija. Dodal sem pogoj, da mora biti posamezen dogodek v pb imeti definirano lokacijo(ker sicer izris na zemljevidu ni mogoč), nato pa sem iz teh treh tabel z sql stavkom pridobil zahtevane vrednosti, ki se bodo vnesle v tabelo. 
-Za preverjanje sem connection string spremenil na lokalno bazo(na azure serverju ni vpisanih dogodkov), vpisal nek dogodek, mu dodal lokacijo in preveril izpis na zemljevidu, ki je bil pravilen. testni primere sem zakomentiral in jih dal na dno datoteke, če bodo še uporabljeni. 
-
-GIT, GITHUB(JT):
-V projekt sem dodal .gitignore, da ne boma pull/pushalla nepotrebnih datotek v najinem repositoryu- lepša urejenost. Gizhub repository sma imela že narejen, vmes sma ga ob javni objavi aplikacije duplicirala in spremenila. Git z potrebnimi mapami(clear, git, main) sem ustvaril že predhodno ob začetku projekta. Ob spremembi repositorya je bila potrebna sprememba lokacije za push in pull.  Vaje6- pull request in branchanje!
 
 
 
