@@ -2,7 +2,7 @@ IFIND
 
 Člana ekipe:
 63240336 Jan Tuhtar
-63240357 Jan Zamernik
+63240357 Jan Zamernik 
 UVOD
 Iskanje dogodkov na internetu je lahko zamudno, poleg tega pa vsi dogodki niso oglaševani na spletnih straneh ali plakatnih panojih. Z informacijskim sistemom iFind želimo ta problem rešiti tako, da bi omogočili enostavno objavljanje in iskanje dogodkov na interaktivnem zemljevidu.
 Organizatorji bi imeli brezplačen dostop do aplikacije, kjer bi po prijavi lahko dodajali nove dogodke z opisom, lokacijo, datumom in kategorijo (npr. koncert, šport, delavnica). 
