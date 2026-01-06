@@ -1,54 +1,225 @@
 @model web.Models.Dogodek
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Uredi dogodek";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<h4>Dogodek</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Naziv" class="control-label"></label>
-                <input asp-for="Naziv" class="form-control" />
-                <span asp-validation-for="Naziv" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Opis" class="control-label"></label>
-                <input asp-for="Opis" class="form-control" />
-                <span asp-validation-for="Opis" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DatumCas" class="control-label"></label>
-                <input asp-for="DatumCas" class="form-control" />
-                <span asp-validation-for="DatumCas" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrganizatorId" class="control-label"></label>
-                <select asp-for="OrganizatorId" class="form-control" asp-items="ViewBag.OrganizatorId"></select>
-                <span asp-validation-for="OrganizatorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="KategorijaId" class="control-label"></label>
-                <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId"></select>
-                <span asp-validation-for="KategorijaId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<style>
+/* ====== VNUTRANJI WRAPPER + BORDER ====== */
+.row_custom {
+    width: 70%;
+    margin: 50px auto;
+    display: flex;
+    border: 2px solid #2B82CB;
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+.row_inner {
+    display: flex;
+    width: 100%;
+    background-color: white;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+/* ====== LEVI IN DESNI DEL ====== */
+.levi {
+    flex: 1;
+    padding: 5%;
+    background: linear-gradient(to right , #2B82CB, #ffffff);
+}
+
+.desni {
+    flex: 1;
+    padding: 5%;
+    background-color: #ffffff;
+}
+
+/* ====== VNOSNA POLJA ====== */
+input,
+textarea,
+select {
+    width: 100%;
+    box-sizing: border-box;
+    color: black;
+}
+
+.form-control {
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, white, white);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+    border: none;
+    color: black;
+}
+
+.form-control::placeholder {
+    color: black;
+    opacity: 1;
+}
+
+/* ====== GUMBI ====== */
+.gumbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.gumb_nazaj, .gumb_registracija {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 10px;
+    outline: 2px solid #2B82CB;
+}
+
+.gumb_nazaj {
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    width: 37%;
+    background-color: white;
+}
+
+.gumb_nazaj:hover {
+    background-color: #2B82CB;
+    color: white;
+    box-shadow: 0 4px 6px #2B82CB;
+}
+
+.gumb_registracija {
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    width: 60%;
+    background-color: white;
+}
+
+.gumb_registracija:hover {
+    background-color: #2B82CB;
+    color: white;
+    box-shadow: 0 4px 6px #2B82CB;
+}
+
+/* Map container */
+#map {
+    height: 500px;
+    border-radius: 18px;
+    border: 2px solid #2B82CB;
+    margin-top: 10px;
+}
+
+#coordinates {
+    text-align: center;
+    padding: 12px 0;
+    font-style: italic;
+}
+</style>
+
+<div class="row_custom">
+    <div class="row_inner">
+        <div class="levi">
+            <h2 style="color:white;">Uredi dogodek</h2>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger mb-4">
+                    <strong>Napaka pri vnosu:</strong>
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                </div>
+            }
+
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" id="Lat" name="Lat" value="@Model.Lokacija?.Latitude" />
+                <input type="hidden" id="Lng" name="Lng" value="@Model.Lokacija?.Longitude" />
+
+                <div class="form-group mb-3">
+                    <input asp-for="Naziv" class="form-control" placeholder="Naziv dogodka" />
+                    <span asp-validation-for="Naziv" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <textarea asp-for="Opis" class="form-control" rows="3" placeholder="Opis dogodka"></textarea>
+                    <span asp-validation-for="Opis" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <input asp-for="DatumCas" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="DatumCas" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <select asp-for="KategorijaId" class="form-control" asp-items="ViewBag.KategorijaId">
+                        <option value="">Izberi kategorijo</option>
+                    </select>
+                    <span asp-validation-for="KategorijaId" class="text-danger"></span>
+                </div>
+
+                <div class="gumbi">
+                    <a asp-action="Index" class="gumb_nazaj">Prekliči</a>
+                    <button type="submit" class="gumb_registracija">Shrani spremembe</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="desni">
+            <div id="map"></div>
+            <div id="coordinates"><em>Izberite točko na zemljevidu za postavitev pina.</em></div>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        var map = L.map('map').setView([46.0512, 14.5051], 8);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = null;
+        var initLat = parseFloat(document.getElementById('Lat').value);
+        var initLng = parseFloat(document.getElementById('Lng').value);
+
+        if (!isNaN(initLat) && !isNaN(initLng)) {
+            marker = L.marker([initLat, initLng]).addTo(map);
+            map.setView([initLat, initLng], 13);
+        }
+
+        map.on('click', function (e) {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+
+            if (marker) marker.remove();
+            marker = L.marker([lat, lng]).addTo(map);
+
+            document.getElementById('Lat').value = lat;
+            document.getElementById('Lng').value = lng;
+        });
+    </script>
 }
