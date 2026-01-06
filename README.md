@@ -67,12 +67,19 @@ Po uspešnem testiranju sem testne primere zakomentiral in jih premaknil na dno 
 <img width="565" height="416" alt="image" src="https://github.com/user-attachments/assets/07f0f1a1-64a3-4cb5-8677-3a862ad47373" />
  
 DODAJANJE MOŽNOSTI PREGLEDA NAD ORGANIZATORJEVIMI DOGODKI TER PREGLEDA PREDVIDENE UDELEŽBE
-Bom dopisal(gumb Pridem in stran za organizatorjev pregled)
+Dodal sem funkcionalnost gumbu Pridem. Ko uporabnik klikne na ta gumb se v tabelo Udeležba zabeleži id uporabnika, ki se bo udeležil in id dogodka na katerega se bo uporabnik udeležil. Gumb se hkrati iz pridem zamenja na Ne pridem s čemer lahko uporabnik prekliče svojo udeležbo in se tako ta izbriše iz podatkovne baze. To je narejeno tako, da se preveri če je prijavljen uporabnik zabeležen v tabeli Udeležba za dogodek na katerega je kliknil in se na podlagi tega izriše ustrezen gumb. Če uporabnik ni prijavljen lahko na dogodke vseeno klika, vendar če želi potrditi udeležbo s klikom na gumb Pridem, mu aplikacija sporoči, da se mora najprej prijaviti. 
+Mišljeno je, da je tabela Udeležba namenjena predvsem organizatorjem dogodkov, da lahko predvidijo udeležbo na svoj dogodek glede na število prijavljenih. V ta namen sem naredil stran Moji dogodki, do katere se lahko dostopa preko orodne vrstice. Glede na prijavljenega uporabnika se iz tabele Dogodek izpišejo dogodki, ki jih ta organizira. Poleg tega pa se iz tabele udeležba prešteje kolikokrat se pojavi ta dogodek(toliko različnih uporabnikov je potrdilo udeležno nanj) in to mu pove kakšno udeležbo lahko pričakuje na svojem dogodku.   
+
 <img width="945" height="160" alt="image" src="https://github.com/user-attachments/assets/b573a0b2-632c-417b-b374-c86ea9bd4369" />
 
  
 RAZVOJ ANDROID APLIKACIJE
-Bom kratko opisal.
+Najprej sem si namestil najnovejšo različico Android Studia in v njemu začel nov projekt ki sem ga poimenoval iFindAndroid. Ker sam nimam androida sem si naložil tudi virtualni telefon, na katerem bom lahko svojo aplikacijo preverjal. 
+Nato sem aplikacijo povezal na najin github strežnik, in commital v vejo master, da se loči od najinega projekta za spletno aplikacijo. 
+Za pridobivanje podatkov sem se odločil, da bom pridobival podatke o uporabnikih in dogodkih. Podatke bom pridobival iz api-jev, za ti dve tabeli, ki jih je naredil kolega. Za dostop do njih sem najprej omogočil dostop do interneta in si nato shranil tadva linka v mainactivity kot spremenljivki. Uvozil sem tudi Volley knjižnico za komunikacijo
+Potem sem se lotil oblikovanja aplikacije. Za lepšo vizualno podobo sem dodal vijolično barvo pod colors.xml , ki jo bom uporabil pri gumbih in rahlo rožnato ozadje. Dodal sem sem naslov in nato tri gumbe- Za prikaz uporabnikov, dogodkov in resitiranje. Ideja je, da vsi vplivajo na isti textview. Gumba prikaži uporabnike in dogodke pošljeta GET zahtevek na api in glede na pridobljeno izpišeta podatke v textview. Pri uporabnikih nas zanima njihovo ime, priimek in njihov mail, pri dogodkih pa njihov ime in čas. Textview v katerem se ti podatki izpisujejo sem ovil v scrollable, tako da, če je uporabnikov več od velikost textviewa, se lahko preprosto premikamo skozi njega. Gumb resitiraj resitira textview. 
+Ker mi je pri tem spodaj aplikacije ostalo kar nekaj prostora, sem se odločil, da naredim vpis uporabnika kar v isti activity. Uporabnik mora napisati ime, priimek, spol, mail in geslo(podobno kot v registraciji pri najini spletni aplikaciji) in z klikom na gumb Dodaj se sproži post zahtevek na user api, ki doda vpisane podatke. To sem dodatno preverjal na api, in da tega uporabnika izpiše že z naslednjim klikom na gumb prikaza uporabnikov.
+
 <img width="235" height="520" alt="image" src="https://github.com/user-attachments/assets/5b154d40-e7b7-4ca5-9add-9a8efdd38982" />
 
 
