@@ -6,7 +6,6 @@
 }
 
 <style>
-/* --- CSS po vzoru MojiDogodkiViewModel --- */
 body {
     background: #f5efff;
     font-family: "Segoe UI", Arial, sans-serif;
@@ -66,6 +65,7 @@ body {
     color: white;
     font-weight: 500;
     transition: 0.25s;
+    text-decoration: none;
 }
 
 .btn-primary:hover, .action-button:hover {
@@ -92,11 +92,14 @@ body {
 <h2 class="page-title">Kategorije</h2>
 
 <div class="account-content">
+    <div style="margin-bottom: 20px;">
+        <a asp-action="Create" asp-controller="Kategorije" class="btn btn-primary">Ustvari novo kategorijo</a>
+    </div>
+
     @if (!Model.Any())
     {
         <div class="alert alert-info mt-4">
             <strong>Trenutno ni nobene kategorije.</strong>
-            <a asp-action="Create" asp-controller="Kategorije" class="btn btn-sm btn-primary" style="margin-left:12px;">Ustvari novo!</a>
         </div>
     }
     else
