@@ -1,38 +1,154 @@
 @model web.Models.Kategorija
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Ustvari kategorijo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<style>
+.row_custom {
+    width: 70%;
+    margin: 50px auto;
+    display: flex;
+    border: 2px solid #2B82CB;
+    border-radius: 20px;
+    box-sizing: border-box;
+}
 
-<h4>Kategorija</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Naziv" class="control-label"></label>
-                <input asp-for="Naziv" class="form-control" />
-                <span asp-validation-for="Naziv" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Opis" class="control-label"></label>
-                <input asp-for="Opis" class="form-control" />
-                <span asp-validation-for="Opis" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+.row_inner {
+    display: flex;
+    width: 100%;
+    background-color: white;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.levi {
+    flex: 1;
+    padding: 5%;
+    background: linear-gradient(to right , #2B82CB, #ffffff);
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    box-sizing: border-box;
+    color: black;
+}
+
+.form-control {
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, white, white);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+    border: none;
+    color: black;
+}
+
+.form-control::placeholder {
+    color: black;
+    opacity: 1;
+}
+
+.gumbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.gumb_nazaj, .gumb_registracija {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 10px;
+    outline: 2px solid #2B82CB;
+}
+
+.gumb_nazaj {
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    width: 37%;
+    background-color: white;
+}
+
+.gumb_nazaj:hover {
+    background-color: #2B82CB;
+    color: white;
+    box-shadow: 0 4px 6px #2B82CB;
+}
+
+.gumb_registracija {
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    width: 60%;
+    background-color: white;
+}
+
+.gumb_registracija:hover {
+    background-color: #2B82CB;
+    color: white;
+    box-shadow: 0 4px 6px #2B82CB;
+}
+</style>
+
+<div class="row_custom">
+    <div class="row_inner">
+        <div class="levi">
+            <h2 style="color:white;">Ustvari kategorijo</h2>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger mb-4">
+                    <strong>Napaka pri vnosu:</strong>
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                </div>
+            }
+
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group mb-3">
+                    <input asp-for="Naziv"
+                           class="form-control"
+                           placeholder="Naziv kategorije" />
+                    <span asp-validation-for="Naziv" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <textarea asp-for="Opis"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Opis kategorije"></textarea>
+                    <span asp-validation-for="Opis" class="text-danger"></span>
+                </div>
+
+                <div class="gumbi">
+                    <a asp-action="Index" class="gumb_nazaj">Prekliči</a>
+                    <button type="submit" class="gumb_registracija">Ustvari kategorijo</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
