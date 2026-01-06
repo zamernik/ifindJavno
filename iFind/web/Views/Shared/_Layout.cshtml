@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/web.styles.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
-
 </head>
 <body class="d-flex flex-column min-vh-100">
    <header>
@@ -25,41 +24,55 @@
             </button>
 
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                
-
-                <!-- za prijavo in registracijo-->
-
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Domov</a>
                     </li>
-                    <!-- Dodaj druge linke lahko dodava po potrebi oz v nadaljevanju -->
-                    <li class="nav-item"> <!-- To morajo videti samo organizatorji !! -->
-                        <a class="nav-link text-dark" asp-controller="Dogodki" asp-action="Create">Dodaj dogodek</a>  
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="MojiDogodki">Moji dogodki</a>
-                    </li>
-                </ul>
-                 <partial name="_LoginPartial" />
 
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Dogodki" asp-action="Create">Dodaj dogodek</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="MojiDogodki">Moji dogodki</a>
+                        </li>
+                    }
+
+                    @* Admin linki *@
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" asp-controller="Dogodki" asp-action="Index">Admin Dogodki</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" asp-controller="Kategorije" asp-action="Index">Admin Kategorije</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" asp-area="Identity" asp-page="/Account/Manage/Users">Uporabniki Admin</a>
+                        </li>
+                    }
+                </ul>
+
+                <partial name="_LoginPartial" />
             </div>
         </div>
     </nav>
 </header>
 
-    <main role="main" class="flex-fill p-0">
-         @RenderBody()
-    </main>
+<main role="main" class="flex-fill p-0">
+    @RenderBody()
+</main>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            <p>Jan Tuhtar & Jan Zamernik 2025</p>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<footer class="border-top footer text-muted">
+    <div class="container">
+        <p>Jan Tuhtar & Jan Zamernik 2025</p>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
