@@ -4,37 +4,320 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Moji dogodki</h2>
+<style>
+body {
+    background: #f5efff;
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info mt-4">
-        <strong>Nimate še nobenega dogodka.</strong> <a asp-action="Create" asp-controller="Dogodki">Ustvari prvega!</a>
-    </div>
+.page-title {
+    text-align: left;
+    margin: 40px auto 10px auto;
+    width: 90%;
+    max-width: 1200px;
+    font-size: 2rem;
+    color: #4a0050;
 }
-else
-{
-    <table class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <th>Naziv</th>
-                <th>Datum in ura</th>
-                <th>Opis</th>
-                <th>Prijavljeni</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var dogodek in Model)
-            {
+
+.account-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto 60px auto;
+}
+
+.account-sidebar {
+    background: linear-gradient(to bottom right, #2B82CB, #ffffff);
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 15px rgba(135, 28, 135, 0.15);
+}
+
+.sidebar-title {
+    margin: 0 0 10px;
+    color: white;
+}
+
+.account-sidebar hr {
+    border: none;
+    height: 2px;
+    background: #2B82CB;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.account-content {
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 5px 15px rgba(135, 28, 135, 0.12);
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+input.form-control,
+select.form-control {
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #2B82CB, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+input.form-control:focus,
+select.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #2B82CB, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+.btn-primary,
+.action-button {
+    background: #2B82CB;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 500;
+    transition: 0.25s;
+}
+
+.btn-primary:hover,
+.action-button:hover {
+    background: #2B82CB;
+    box-shadow: 0 5px 10px rgba(135, 28, 135, 0.3);
+}
+
+.back-button {
+    background: white;
+    border: 2px solid #1f6fb0;
+    padding: 10px 18px;
+    border-radius: 10px;
+    color: #871C87;
+    font-weight: 500;
+    transition: 0.25s;
+}
+
+.back-button:hover {
+    background: #2B82CB;
+    color: white;
+    box-shadow: 0 5px 10px #2B82CB;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-item {
+    margin-bottom: 8px;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: #2B82CB;
+    background: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.sidebar-link:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(135, 28, 135, 0.15);
+    color: #2B82CB;
+}
+
+.sidebar-link.active {
+    background: white;
+    color: #2B82CB;
+    box-shadow: 0 4px 10px rgba(135, 28, 135, 0.25);
+}
+
+.nav-link.active {
+    background: #2B82CB !important;
+    color: white !important;
+    border-radius: 10px;
+}
+
+.row {
+    width: 70%;
+    align-items: stretch;
+    gap: 5px;
+    border-radius: 20px;
+    outline: 2px solid #2B82CB;
+    margin: 50px auto;
+    display: flex;
+    background-color: #ffffff;
+}
+
+.levi {
+    flex: 1;
+    padding: 5%;
+    border-radius: 20px;
+    background: linear-gradient(to right , #2B82CB, #ffffff);
+}
+
+.desni {
+    flex: 1;
+    padding:5%;
+    background-color: #ffffff;
+}
+
+input {
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-control {
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #2B82CB, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: white;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(to right, #2B82CB, #ffffff);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+    background-position: bottom;
+    margin-top: 10px;
+    color: black;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.table th, .table td {
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #eef1f7;
+    color: #2b2b2b;
+}
+
+.table thead th {
+    background: linear-gradient(90deg, rgba(43,130,203,0.06), rgba(255,255,255,0.03));
+    color: #2B82CB;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(43,130,203,0.12);
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background: #fbfbfe;
+}
+
+.badge.bg-primary {
+    background: #2B82CB !important;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.18s;
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(231,76,60,0.18);
+}
+
+style>
+
+<h2 class="page-title">Moji dogodki</h2>
+
+<div class="account-content">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info mt-4">
+            <strong>Nimate še nobenega dogodka.</strong>
+            <a asp-action="Create" asp-controller="Dogodki" class="btn btn-sm btn-primary" style="margin-left:12px;">Ustvari prvega!</a>
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped mt-4">
+            <thead>
                 <tr>
-                    <td><strong>@dogodek.Naziv</strong></td>
-                    <td>@dogodek.DatumCas.ToString("dd. MM. yyyy HH:mm")</td>
-                    <td>@(string.IsNullOrEmpty(dogodek.Opis) ? "/" : dogodek.Opis)</td>
-                    <td>
-                        <span class="badge bg-primary">@dogodek.SteviloPrijav</span>
-                    </td>
+                    <th>Naziv</th>
+                    <th>Datum in ura</th>
+                    <th>Opis</th>
+                    <th>Prijavljeni</th>
+                    <th>Akcije</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var dogodek in Model)
+                {
+                    <tr>
+                        <td><strong>@dogodek.Naziv</strong></td>
+                        <td>@dogodek.DatumCas.ToString("dd. MM. yyyy HH:mm")</td>
+                        <td>@(string.IsNullOrEmpty(dogodek.Opis) ? "/" : dogodek.Opis)</td>
+                        <td>
+                            <span class="badge bg-primary">@dogodek.SteviloPrijav</span>
+                        </td>
+                        <td>
+                            <form asp-action="Delete" asp-controller="Dogodki" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@dogodek.Id" />
+                                <button type="submit" class="btn-danger"
+                                        onclick="return confirm('Ste prepričani, da želite izbrisati dogodek?');">
+                                    Izbriši
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
