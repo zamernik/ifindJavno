@@ -45,13 +45,13 @@
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-controller="Dogodki" asp-action="Index">Admin Dogodki</a>
+                                <a class="nav-link text-dark" asp-controller="Dogodki" asp-action="Index">Admin Dogodki</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-controller="Kategorije" asp-action="Index">Admin Kategorije</a>
+                                <a class="nav-link text-dark" asp-controller="Kategorije" asp-action="Index">Admin Kategorije</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="Identity" asp-page="/Account/Manage/Users">Uporabniki Admin</a>
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Users">Uporabniki Admin</a>
                             </li>
                         }
                     </ul>
